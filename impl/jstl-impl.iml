@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module relativePaths="true" MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_5" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/target/classes" />
+    <exclude-output />
+    <output-test url="file://$MODULE_DIR$/target/test-classes" />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/target/apt-generated-sources" />
+      <excludeFolder url="file://$MODULE_DIR$/target/classes" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library name="junit:junit:4.3.1">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.3.1/junit-4.3.1.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.3.1/junit-4.3.1-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.3.1/junit-4.3.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.javaee:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.javaee/10.0-SNAPSHOT/javax.javaee-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.javaee/10.0-SNAPSHOT/javax.javaee-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.javaee/10.0-SNAPSHOT/javax.javaee-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.enterprise.deploy:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.enterprise.deploy/10.0-SNAPSHOT/javax.enterprise.deploy-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.enterprise.deploy/10.0-SNAPSHOT/javax.enterprise.deploy-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.enterprise.deploy/10.0-SNAPSHOT/javax.enterprise.deploy-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.ejb:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.ejb/10.0-SNAPSHOT/javax.ejb-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.ejb/10.0-SNAPSHOT/javax.ejb-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.ejb/10.0-SNAPSHOT/javax.ejb-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.persistence:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.persistence/10.0-SNAPSHOT/javax.persistence-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.persistence/10.0-SNAPSHOT/javax.persistence-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.persistence/10.0-SNAPSHOT/javax.persistence-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.servlet:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.servlet/10.0-SNAPSHOT/javax.servlet-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.servlet/10.0-SNAPSHOT/javax.servlet-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.servlet/10.0-SNAPSHOT/javax.servlet-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.jms:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.jms/10.0-SNAPSHOT/javax.jms-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.jms/10.0-SNAPSHOT/javax.jms-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.jms/10.0-SNAPSHOT/javax.jms-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.security.jacc:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.security.jacc/10.0-SNAPSHOT/javax.security.jacc-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.security.jacc/10.0-SNAPSHOT/javax.security.jacc-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.security.jacc/10.0-SNAPSHOT/javax.security.jacc-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.resource:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.resource/10.0-SNAPSHOT/javax.resource-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.resource/10.0-SNAPSHOT/javax.resource-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.resource/10.0-SNAPSHOT/javax.resource-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.annotation:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.annotation/10.0-SNAPSHOT/javax.annotation-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.annotation/10.0-SNAPSHOT/javax.annotation-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.annotation/10.0-SNAPSHOT/javax.annotation-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.jws:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.jws/10.0-SNAPSHOT/javax.jws-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.jws/10.0-SNAPSHOT/javax.jws-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.jws/10.0-SNAPSHOT/javax.jws-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.xml.soap:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.xml.soap/10.0-SNAPSHOT/javax.xml.soap-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.xml.soap/10.0-SNAPSHOT/javax.xml.soap-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.xml.soap/10.0-SNAPSHOT/javax.xml.soap-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.xml.ws:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.xml.ws/10.0-SNAPSHOT/javax.xml.ws-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.xml.ws/10.0-SNAPSHOT/javax.xml.ws-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.xml.ws/10.0-SNAPSHOT/javax.xml.ws-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.xml.rpc:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.xml.rpc/10.0-SNAPSHOT/javax.xml.rpc-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.xml.rpc/10.0-SNAPSHOT/javax.xml.rpc-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.xml.rpc/10.0-SNAPSHOT/javax.xml.rpc-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.xml.bind:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.xml.bind/10.0-SNAPSHOT/javax.xml.bind-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.xml.bind/10.0-SNAPSHOT/javax.xml.bind-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.xml.bind/10.0-SNAPSHOT/javax.xml.bind-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.mail:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.mail/10.0-SNAPSHOT/javax.mail-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.mail/10.0-SNAPSHOT/javax.mail-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.mail/10.0-SNAPSHOT/javax.mail-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.transaction:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.transaction/10.0-SNAPSHOT/javax.transaction-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.transaction/10.0-SNAPSHOT/javax.transaction-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.transaction/10.0-SNAPSHOT/javax.transaction-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.servlet.jsp:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.servlet.jsp/10.0-SNAPSHOT/javax.servlet.jsp-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.servlet.jsp/10.0-SNAPSHOT/javax.servlet.jsp-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.servlet.jsp/10.0-SNAPSHOT/javax.servlet.jsp-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="javax.faces:jsf-api:1.2_09">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/javax/faces/jsf-api/1.2_09/jsf-api-1.2_09.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/javax/faces/jsf-api/1.2_09/jsf-api-1.2_09-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/javax/faces/jsf-api/1.2_09/jsf-api-1.2_09-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.servlet.jsp.jstl:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.servlet.jsp.jstl/10.0-SNAPSHOT/javax.servlet.jsp.jstl-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.servlet.jsp.jstl/10.0-SNAPSHOT/javax.servlet.jsp.jstl-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.servlet.jsp.jstl/10.0-SNAPSHOT/javax.servlet.jsp.jstl-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.management.j2ee:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.management.j2ee/10.0-SNAPSHOT/javax.management.j2ee-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.management.j2ee/10.0-SNAPSHOT/javax.management.j2ee-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.management.j2ee/10.0-SNAPSHOT/javax.management.j2ee-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.activation:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.activation/10.0-SNAPSHOT/javax.activation-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.activation/10.0-SNAPSHOT/javax.activation-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.activation/10.0-SNAPSHOT/javax.activation-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.xml.stream:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.xml.stream/10.0-SNAPSHOT/javax.xml.stream-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.xml.stream/10.0-SNAPSHOT/javax.xml.stream-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.xml.stream/10.0-SNAPSHOT/javax.xml.stream-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish:javax.security.auth.message:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.security.auth.message/10.0-SNAPSHOT/javax.security.auth.message-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.security.auth.message/10.0-SNAPSHOT/javax.security.auth.message-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.security.auth.message/10.0-SNAPSHOT/javax.security.auth.message-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="com.sun.enterprise:hk2:0.3.14">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/com/sun/enterprise/hk2/0.3.14/hk2-0.3.14.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/com/sun/enterprise/hk2/0.3.14/hk2-0.3.14-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/com/sun/enterprise/hk2/0.3.14/hk2-0.3.14-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="com.sun.enterprise:hk2-core:0.3.14">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/com/sun/enterprise/hk2-core/0.3.14/hk2-core-0.3.14.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/com/sun/enterprise/hk2-core/0.3.14/hk2-core-0.3.14-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/com/sun/enterprise/hk2-core/0.3.14/hk2-core-0.3.14-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="com.sun.enterprise:config:0.3.14">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/com/sun/enterprise/config/0.3.14/config-0.3.14.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/com/sun/enterprise/config/0.3.14/config-0.3.14-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/com/sun/enterprise/config/0.3.14/config-0.3.14-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="com.sun.enterprise:auto-depends:0.3.14">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/com/sun/enterprise/auto-depends/0.3.14/auto-depends-0.3.14.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/com/sun/enterprise/auto-depends/0.3.14/auto-depends-0.3.14-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/com/sun/enterprise/auto-depends/0.3.14/auto-depends-0.3.14-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="com.sun.enterprise:tiger-types-osgi:0.3.14">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/com/sun/enterprise/tiger-types-osgi/0.3.14/tiger-types-osgi-0.3.14.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/com/sun/enterprise/tiger-types-osgi/0.3.14/tiger-types-osgi-0.3.14-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/com/sun/enterprise/tiger-types-osgi/0.3.14/tiger-types-osgi-0.3.14-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish.common:glassfish-api:10.0.407">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/common/glassfish-api/10.0.407/glassfish-api-10.0.407.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/common/glassfish-api/10.0.407/glassfish-api-10.0.407-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/common/glassfish-api/10.0.407/glassfish-api-10.0.407-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish.external:grizzly-module:1.8.5">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/external/grizzly-module/1.8.5/grizzly-module-1.8.5.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/external/grizzly-module/1.8.5/grizzly-module-1.8.5-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/external/grizzly-module/1.8.5/grizzly-module-1.8.5-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.glassfish.common:common-util:10.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/common/common-util/10.0-SNAPSHOT/common-util-10.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/common/common-util/10.0-SNAPSHOT/common-util-10.0-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/common/common-util/10.0-SNAPSHOT/common-util-10.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntryProperties />
+  </component>
+</module>
+
