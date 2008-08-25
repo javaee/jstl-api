@@ -42,10 +42,10 @@
     <parent>
         <groupId>org.glassfish.web</groupId>
         <artifactId>jstl</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>1.2</version>
     </parent>
     <artifactId>jstl-impl</artifactId>
-    <version>10.0-SNAPSHOT</version>
+    <version>1.2</version>
     <packaging>jar</packaging>
     <name>JavaServer Pages (TM) TagLib Implementation</name>
 
@@ -130,13 +130,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>1.5</source>
-                        <target>1.5</target>
-                    </configuration>
-            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -181,7 +174,7 @@
         <dependency>
             <groupId>javax.servlet.jsp.jstl</groupId>
             <artifactId>jstl-api</artifactId>
-            <version>1.2-rev-1</version>
+            <version>1.2</version>
         </dependency>
     </dependencies>
     <distributionManagement>
