@@ -71,7 +71,7 @@ import javax.servlet.jsp.JspTagException;
  * @author Kin-man Chung
  * @version $Id: IteratedExpression.java,v 1.6 2006/11/17 19:48:41 jluehe Exp $
  */
-public final class IteratedExpression /*implements Serializable*/ {
+public final class IteratedExpression implements Serializable {
 
     private static final long serialVersionUID = 1L;
     protected final ValueExpression orig;
