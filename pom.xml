@@ -48,6 +48,10 @@ he.org/maven-v4_0_0.xsd">
     <packaging>pom</packaging>
     <name>GlassFish JSTL related modules</name>
 
+    <properties>
+        <findbugs.exclude></findbugs.exclude>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -57,6 +61,17 @@ he.org/maven-v4_0_0.xsd">
                         <target>1.5</target>
                     </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <threshold>High</threshold>
+                    <excludeFilterFile>${findbugs.exclude}</excludeFilterFile>
+                    <findbugsXmlOutput>true</findbugsXmlOutput>
+                    <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
+                </configuration>
+            </plugin>
         </plugins>
         <extensions>
             <extension>
@@ -65,6 +80,21 @@ he.org/maven-v4_0_0.xsd">
             </extension>
         </extensions>
     </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <threshold>High</threshold>
+                    <excludeFilterFile>${findbugs.exclude}</excludeFilterFile>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+
     <repositories>
         <repository>
             <id>glassfish-repository</id>
