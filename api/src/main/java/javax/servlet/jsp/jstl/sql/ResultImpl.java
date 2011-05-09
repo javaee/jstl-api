@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -80,8 +80,8 @@ import java.util.TreeMap;
  */
 
 class ResultImpl implements Result, Serializable {
-    private List rowMap;
-    private List rowByIndex;
+    private List<SortedMap<String, Object>> rowMap;
+    private List<Object[]> rowByIndex;
     private String[] columnNames;
     private boolean isLimited;
 
@@ -100,8 +100,8 @@ class ResultImpl implements Result, Serializable {
     public ResultImpl(ResultSet rs, int startRow, int maxRows)
         throws SQLException 
     {
-        rowMap = new ArrayList();
-        rowByIndex = new ArrayList();
+        rowMap = new ArrayList<SortedMap<String, Object>>();
+        rowByIndex = new ArrayList<Object[]>();
 
         ResultSetMetaData rsmd = rs.getMetaData();
         int noOfColumns = rsmd.getColumnCount();
@@ -125,8 +125,8 @@ class ResultImpl implements Result, Serializable {
                 break;
             }
             Object[] columns = new Object[noOfColumns];
-            SortedMap columnMap = 
-                new TreeMap(String.CASE_INSENSITIVE_ORDER);
+            SortedMap<String, Object> columnMap = 
+                new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
 
             // JDBC uses 1 as the lowest index!
             for (int i = 1; i <= noOfColumns; i++) {
@@ -158,7 +158,7 @@ class ResultImpl implements Result, Serializable {
         }
 
         //should just be able to return SortedMap[] object
-        return (SortedMap []) rowMap.toArray(new SortedMap[0]);
+        return rowMap.toArray(new SortedMap[0]);
     }
 
 

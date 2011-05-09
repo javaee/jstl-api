@@ -109,7 +109,7 @@ public class PermittedTaglibsTLV extends TagLibraryValidator {
     //*********************************************************************
     // Validation and configuration state (protected)
 
-    private Set permittedTaglibs;		// what URIs are allowed?
+    private Set<String> permittedTaglibs;		// what URIs are allowed?
     private boolean failed;			// did the page fail?
     private String uri;				// our taglib's URI
 
@@ -173,10 +173,10 @@ public class PermittedTaglibsTLV extends TagLibraryValidator {
     // Utility functions
 
     /** Returns Set of permitted taglibs, based on configuration data. */
-    private Set readConfiguration() {
+    private Set<String> readConfiguration() {
 
 	// initialize the Set
-	Set s = new HashSet();
+	Set<String> s = new HashSet<String>();
 
 	// get the space-separated list of taglibs
 	String uris = (String) getInitParameters().get(PERMITTED_TAGLIBS_PARAM);
