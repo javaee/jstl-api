@@ -43,6 +43,12 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>net.java</groupId>
+        <artifactId>jvnet-parent</artifactId>
+        <version>1</version>
+    </parent>
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.web</groupId>
     <artifactId>javax.servlet.jsp.jstl</artifactId>
@@ -94,15 +100,23 @@
             <archive>dev@jstl.java.net</archive>
         </mailingList>
     </mailingLists>
+    <scm>
+        <connection>scm:svn:https://svn.java.net/svn/jstl~svn/trunk/impl</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/jstl~svn/trunk/impl</developerConnection>
+        <url>http://java.net/projects/jstl/sources/svn/show</url>
+    </scm>
+
 
     <build>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.5</source>
+                    <target>1.5</target>
+<!--
                     <compilerArgument>-Xlint:unchecked</compilerArgument>
+-->
                 </configuration>
             </plugin>
             <plugin>
@@ -192,8 +206,8 @@
                     <configuration>
                       <groups>
                         <group>
-                          <title>JavaServer Pages API Documentation</title>
-                          <packages>javax.servlet.jsp</packages>
+                          <title>JavaServer Pages Tag Libraries Documentation</title>
+                          <packages>org.apache.taglibs</packages>
                         </group>
                       </groups>
                       <bottom> Copyright (c) 1999-2011 Oracle and/or its affiliates. All Rights Reserved. Use is subject to license terms. </bottom>
@@ -228,6 +242,15 @@
                     <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <mavenExecutorId>forked-path</mavenExecutorId>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <arguments>${release.arguments}</arguments>
+                </configuration>
+            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -259,55 +282,40 @@
 
     <repositories>
         <repository>
-            <id>glassfish-repository</id>
-            <url>http://download.java.net/maven/glassfish</url>
-            <snapshots>
+            <releases>
+                <enabled>true</enabled>
                 <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>java.net</id>
-            <url>http://download.java.net/maven/1</url>
-            <layout>legacy</layout>
+                <checksumPolicy>warn</checksumPolicy>
+            </releases>
             <snapshots>
+                <enabled>false</enabled>
                 <updatePolicy>never</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
             </snapshots>
-        </repository>
-        <repository>
-            <id>maven2-repository.dev.java.net</id>
-            <name>Java.net Repository for Maven</name>
-            <url>http://download.java.net/maven/2</url>
-            <snapshots>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
+            <id>java.net.Releases</id>
+            <name>Java.net Releases</name>
+            <url>https://maven.java.net/content/repositories/releases</url>
         </repository>
     </repositories>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>glassfish-repository</id>
-            <name>Java.net Repository for Maven 2</name>
-            <url>http://download.java.net/maven/glassfish</url>
-            <snapshots>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
             <version>2.2</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.el</groupId>
             <artifactId>el-api</artifactId>
             <version>2.2</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet.jsp.jstl</groupId>

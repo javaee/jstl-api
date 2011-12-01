@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,8 +60,10 @@ package org.apache.taglibs.standard.tag.common.sql;
 
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
@@ -75,7 +77,7 @@ import org.apache.taglibs.standard.resources.Resources;
  * @author Hans Bergsten
  */
 public class DataSourceWrapper implements DataSource {
-    private String driverClassName;
+    private Driver driver;
     private String jdbcURL;
     private String userName;
     private String password;
@@ -84,9 +86,11 @@ public class DataSourceWrapper implements DataSource {
 	throws ClassNotFoundException, InstantiationException, 
 	       IllegalAccessException {
 
-	this.driverClassName = driverClassName;
-        Class.forName(driverClassName, true, 
+        Object instance = Class.forName(driverClassName, true, 
             Thread.currentThread().getContextClassLoader()).newInstance();
+        if (instance instanceof Driver) {
+            driver = (Driver) instance;
+        }
     }
 
     public void setJdbcURL(String jdbcURL) {
@@ -106,14 +110,25 @@ public class DataSourceWrapper implements DataSource {
      * set properties.
      */
     public Connection getConnection() throws SQLException {
-	Connection conn = null;
-	if (userName != null) {
-	    conn = DriverManager.getConnection(jdbcURL, userName, password);
-	}
-	else {
-	    conn = DriverManager.getConnection(jdbcURL);
-	}
-	return conn;
+        Connection conn = null;
+        if (driver != null) {
+            Properties props = new Properties();
+            if (userName != null) {
+                props.put("user", userName);
+            }
+            if (password != null) {
+                props.put("password", password);
+            }
+            conn = driver.connect(jdbcURL, props);
+        }
+        if (conn == null) {
+            if (userName != null) {
+                conn = DriverManager.getConnection(jdbcURL, userName, password);
+            } else {
+                conn = DriverManager.getConnection(jdbcURL);
+            }
+        }
+        return conn;
     }
 
     /**
