@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,7 +58,6 @@
 
 package org.apache.taglibs.standard.tag.common.xml;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 import java.security.AccessController;
@@ -70,7 +69,7 @@ import javax.servlet.jsp.tagext.Tag;
 import javax.servlet.jsp.tagext.TagSupport;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.TransformerException;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -79,9 +78,7 @@ import javax.xml.xpath.XPathVariableResolver;
 import javax.xml.xpath.XPathFactoryConfigurationException;
 
 import org.apache.taglibs.standard.resources.Resources;
-import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -91,6 +88,7 @@ import org.w3c.dom.NodeList;
  * @author Shawn Bayern
  * @author Ramesh Mandava ( ramesh.mandava@sun.com )
  * @author Pierre Delisle ( pierre.delisle@sun.com )
+ * @author Dongbin Nie
  */
 // would ideally be a base class, but some of our user handlers already
 // have their own parents
@@ -132,20 +130,29 @@ public class XPathUtil {
     // Support for XPath evaluation
     
     private PageContext pageContext;
-    private static HashMap exprCache;
-    private static JSTLXPathNamespaceContext jstlXPathNamespaceContext = null;
-
+    
     private static final String XPATH_FACTORY_CLASS_NAME = 
             "org.apache.taglibs.standard.tag.common.xml.JSTLXPathFactory";
     private static XPathFactory XPATH_FACTORY;
+    
+    private static JSTLXPathNamespaceContext jstlXPathNamespaceContext = null;
+    
+    private static DocumentBuilderFactory dbf = null;
+    
     static {
+        initXPathFactory();
+        initXPathNamespaceContext();
+        initDocumentBuilderFactory();
+    }
+
+    private static void initXPathFactory() {
         // If the system property DEFAULT_PROPERTY_NAME + ":uri" is present, 
         // where uri is the parameter to this method, then its value is read 
         // as a class name. The method will try to create a new instance of 
         // this class by using the class loader, and returns it if it is 
         // successfully created.
         if (System.getSecurityManager() !=  null) {
-             AccessController.doPrivileged(new PrivilegedAction(){
+             AccessController.doPrivileged(new PrivilegedAction<Object>(){
                 public Object run(){
                     System.setProperty(XPathFactory.DEFAULT_PROPERTY_NAME + 
                             ":" + XPathFactory.DEFAULT_OBJECT_MODEL_URI, 
@@ -163,82 +170,53 @@ public class XPathUtil {
         } catch (XPathFactoryConfigurationException xpce) {
             xpce.printStackTrace();
         }
-    }
+	}
     
     /** Initialize globally useful data. */
-    private synchronized static void staticInit() {
-        if (jstlXPathNamespaceContext == null) {
-            // register supported namespaces
-            jstlXPathNamespaceContext = new JSTLXPathNamespaceContext();
-            jstlXPathNamespaceContext.addNamespace("pageScope", PAGE_NS_URL);
-            jstlXPathNamespaceContext.addNamespace("requestScope", REQUEST_NS_URL);
-            jstlXPathNamespaceContext.addNamespace("sessionScope", SESSION_NS_URL);
-            jstlXPathNamespaceContext.addNamespace("applicationScope", APP_NS_URL);
-            jstlXPathNamespaceContext.addNamespace("param", PARAM_NS_URL);
-            jstlXPathNamespaceContext.addNamespace("initParam", INITPARAM_NS_URL);
-            jstlXPathNamespaceContext.addNamespace("header", HEADER_NS_URL);
-            jstlXPathNamespaceContext.addNamespace("cookie", COOKIE_NS_URL);
-            
-            
-            // create a HashMap to cache the expressions
-            exprCache = new HashMap();
-        }
+    private static void initXPathNamespaceContext() {
+        // register supported namespaces
+        jstlXPathNamespaceContext = new JSTLXPathNamespaceContext();
+        jstlXPathNamespaceContext.addNamespace("pageScope", PAGE_NS_URL);
+        jstlXPathNamespaceContext.addNamespace("requestScope", REQUEST_NS_URL);
+        jstlXPathNamespaceContext.addNamespace("sessionScope", SESSION_NS_URL);
+        jstlXPathNamespaceContext.addNamespace("applicationScope", APP_NS_URL);
+        jstlXPathNamespaceContext.addNamespace("param", PARAM_NS_URL);
+        jstlXPathNamespaceContext.addNamespace("initParam", INITPARAM_NS_URL);
+        jstlXPathNamespaceContext.addNamespace("header", HEADER_NS_URL);
+        jstlXPathNamespaceContext.addNamespace("cookie", COOKIE_NS_URL);
     }
     
-    static DocumentBuilderFactory dbf = null;
-    static DocumentBuilder db = null;
-    static Document d = null;
+    private static void initDocumentBuilderFactory() {
+        dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware( true );
+        dbf.setValidating( false );
+    }
     
-    static Document getDummyDocument( ) {
+    /**
+     * Create a new empty document.
+     *
+     * This method always allocates a new document as its root node might be
+     * exposed to other tags and potentially be mutated.
+     *
+     * @return a new empty document
+     */
+    private static Document newEmptyDocument() {
         try {
-            if ( dbf == null ) {
-                dbf = DocumentBuilderFactory.newInstance();
-                dbf.setNamespaceAware( true );
-                dbf.setValidating( false );
-            }
-            db = dbf.newDocumentBuilder();
-
-            DOMImplementation dim = db.getDOMImplementation();
-            d = dim.createDocument("http://java.sun.com/jstl", "dummyroot", null); 
-            //d = db.newDocument();
-            return d;
-        } catch ( Exception e ) {
-            e.printStackTrace();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            return db.newDocument();
+        } catch (ParserConfigurationException e) {
+        	throw new AssertionError();
         }
-        return null;
     }
-
-     static Document getDummyDocumentWithoutRoot( ) {
-        try {
-            if ( dbf == null ) {
-                dbf = DocumentBuilderFactory.newInstance();
-                dbf.setNamespaceAware( true );
-                dbf.setValidating( false );
-            }
-            db = dbf.newDocumentBuilder();
-
-            d = db.newDocument();
-            return d;
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    
-    // The following variable is used for holding the modified xpath string
-    // when adapting parameter for Xalan XPath engine, where we need to have
-    // a Non null context node.
-    String modifiedXPath = null;
     
     /**
      * Evaluate an XPath expression to a String value. 
      */
-    public String valueOf(Node n, String xpathString) throws JspTagException {
+    public String valueOf(Node contextNode, String xpathString) 
+        throws JspTagException {
         // p("******** valueOf(" + n + ", " + xpathString + ")");
-        staticInit();
         XPathVariableResolver jxvr = new JSTLXPathVariableResolver(pageContext);
-        Node contextNode = adaptParamsForXalan(n, xpathString.trim(), jxvr);
-
+        
         XPath xpath = XPATH_FACTORY.newXPath();
         xpath.setNamespaceContext(jstlXPathNamespaceContext);
         xpath.setXPathVariableResolver(jxvr);
@@ -253,13 +231,9 @@ public class XPathUtil {
     /** 
      * Evaluate an XPath expression to a boolean value. 
      */
-    public boolean booleanValueOf(Node n, String xpathString)
+    public boolean booleanValueOf(Node contextNode, String xpathString)
     throws JspTagException {
-        
-        staticInit();
         XPathVariableResolver jxvr = new JSTLXPathVariableResolver(pageContext);
-        Node contextNode = adaptParamsForXalan(n, xpathString.trim(), jxvr);
-        xpathString = modifiedXPath;
         
         XPath xpath = XPATH_FACTORY.newXPath();
         xpath.setNamespaceContext(jstlXPathNamespaceContext);
@@ -276,13 +250,9 @@ public class XPathUtil {
     /** 
      * Evaluate an XPath expression to a List of nodes. 
      */
-    public List selectNodes(Node n, String xpathString)  
+    public List selectNodes(Node contextNode, String xpathString)  
         throws JspTagException {
-        
-        staticInit();
         XPathVariableResolver jxvr = new JSTLXPathVariableResolver(pageContext);
-        Node contextNode = adaptParamsForXalan(n, xpathString.trim(), jxvr);
-        xpathString = modifiedXPath;
         
         try {
             XPath xpath = XPATH_FACTORY.newXPath();
@@ -299,15 +269,11 @@ public class XPathUtil {
     /** 
      * Evaluate an XPath expression to a single node. 
      */
-    public Node selectSingleNode(Node n, String xpathString)
+    public Node selectSingleNode(Node contextNode, String xpathString)
     throws JspTagException {
         //p("selectSingleNode of XPathUtil = passed node:" +
         //   "xpathString => " + n + " : " + xpathString );
-        
-        staticInit();
         XPathVariableResolver jxvr = new JSTLXPathVariableResolver(pageContext);
-        Node contextNode = adaptParamsForXalan(n, xpathString.trim(), jxvr);
-        xpathString = modifiedXPath;
         
         try {
             XPath xpath = XPATH_FACTORY.newXPath();
@@ -321,184 +287,6 @@ public class XPathUtil {
     }
     
     //*********************************************************************
-    // Adapt XPath expression for integration with Xalan
-   
-    /**
-     * To evaluate an XPath expression using Xalan, we need 
-     * to create an XPath object, which wraps an expression object and provides 
-     * general services for execution of that expression.
-     *
-     * An XPath object can be instantiated with the following information:
-     *     - XPath expression to evaluate
-     *     - SourceLocator 
-     *        (reports where an error occurred in the XML source or 
-     *        transformation instructions)
-     *     - PrefixResolver
-     *        (resolve prefixes to namespace URIs)
-     *     - type
-     *        (one of SELECT or MATCH)
-     *     - ErrorListener
-     *        (customized error handling)
-     *
-     * Execution of the XPath expression represented by an XPath object
-     * is done via method execute which takes the following parameters:
-     *     - XPathContext 
-     *        The execution context
-     *     - Node contextNode
-     *        The node that "." expresses
-     *     - PrefixResolver namespaceContext
-     *        The context in which namespaces in the XPath are supposed to be 
-     *        expanded.
-     *
-     * Given all of this, if no context node is set for the evaluation
-     * of the XPath expression, one must be set so Xalan 
-     * can successfully evaluate a JSTL XPath expression.
-     * (it will not work if the context node is given as a varialbe
-     * at the beginning of the expression)
-     *
-     * @@@ Provide more details...
-     */
-    protected Node adaptParamsForXalan(Node n, 
-                                       String xpath, 
-                                       XPathVariableResolver jxvr) {
-        Node boundDocument = null;
-        
-        modifiedXPath = xpath;
-        String origXPath = xpath;
-        boolean whetherOrigXPath = true;
-        
-        // If contextNode is not null then  just pass the values to Xalan XPath
-        if ( n != null ) {
-            return n;
-        }
-        
-        if (  xpath.startsWith("$")  ) {
-            // JSTL uses $scopePrefix:varLocalName/xpath expression
-
-            String varQName=  xpath.substring( xpath.indexOf("$")+1);
-            if ( varQName.indexOf("/") > 0 ) {
-                varQName = varQName.substring( 0, varQName.indexOf("/"));
-            }
-            String varPrefix =  null;
-            String varLocalName =  varQName;
-            if ( varQName.indexOf( ":") >= 0 ) {
-                varPrefix = varQName.substring( 0, varQName.indexOf(":") );
-                varLocalName = varQName.substring( varQName.indexOf(":")+1 );
-            }
-            
-            if ( xpath.indexOf("/") > 0 ) {
-                xpath = xpath.substring( xpath.indexOf("/"));
-            } else  {
-                xpath = "/*";
-                whetherOrigXPath = false; 
-            }
-           
-            
-            try {
-                Object varObject=((JSTLXPathVariableResolver) jxvr).getVariableValue("", varPrefix,
-                    varLocalName);
-                //p( "varObject => : its Class " +varObject +
-                // ":" + varObject.getClass() );
-                
-                if ( Class.forName("org.w3c.dom.Document").isInstance(
-                    varObject ) )  {
-                    //boundDocument = ((Document)varObject).getDocumentElement();
-                    boundDocument = ((Document)varObject);
-                } else {
-                    
-                    //p("Creating a Dummy document to pass " +
-                    // " onto as context node " );
-                    
-                    if ( Class.forName("org.apache.taglibs.standard.tag.common.xml.JSTLNodeList").isInstance( varObject ) ) {
-                        Document newDocument = getDummyDocument();
-
-                        JSTLNodeList jstlNodeList = (JSTLNodeList)varObject;
-                        if   ( jstlNodeList.getLength() == 1 ) { 
-                            if ( Class.forName("org.w3c.dom.Node").isInstance(
-                                jstlNodeList.elementAt(0) ) ) { 
-                                Node node = (Node)jstlNodeList.elementAt(0);
-                                Document doc = getDummyDocumentWithoutRoot();
-                                Node importedNode = doc.importNode( node, true);
-                                doc.appendChild (importedNode );
-                                boundDocument = doc;
-                                if ( whetherOrigXPath ) {
-                                    xpath="/*" + xpath;
-                                }
-
-                            } else {
-
-                                //Nodelist with primitive type
-                                Object myObject = jstlNodeList.elementAt(0);
-
-                                //p("Single Element of primitive type");
-                                //p("Type => " + myObject.getClass());
-
-                                xpath = myObject.toString();
-
-                                //p("String value ( xpathwould be this) => " + xpath);
-                                boundDocument = newDocument;
-                            } 
-                            
-                        } else {
-
-                            Element dummyroot = newDocument.getDocumentElement();
-                            for ( int i=0; i< jstlNodeList.getLength(); i++ ) {
-                                Node currNode = (Node)jstlNodeList.item(i);
-                            
-                                Node importedNode = newDocument.importNode(
-                                    currNode, true );
-
-                                //printDetails ( newDocument);
-
-                                dummyroot.appendChild( importedNode );
-
-                                //p( "Details of the document After importing");
-                                //printDetails ( newDocument);
-                            }
-                            boundDocument = newDocument;
-                            // printDetails ( boundDocument );
-                            //Verify :As we are adding Document element we need
-                            // to change the xpath expression.Hopefully this
-                            // won't  change the result
-
-                            xpath = "/*" +  xpath;
-                        }
-                    } else if ( Class.forName("org.w3c.dom.Node").isInstance(
-                        varObject ) ) {
-                        boundDocument = (Node)varObject;
-                    } else {
-                        boundDocument = getDummyDocument();
-                        xpath = origXPath;
-                    }
-                    
-                    
-                }
-            } catch ( UnresolvableException ue ) {
-                // FIXME: LOG
-                // p("Variable Unresolvable :" + ue.getMessage());
-                ue.printStackTrace();
-            } catch ( ClassNotFoundException cnf ) {
-                // Will never happen
-            }
-        } else { 
-            //p("Not encountered $ Creating a Dummydocument 2 "+
-            //   "pass onto as context node " );
-            boundDocument = getDummyDocument();
-        }
-     
-        modifiedXPath = xpath;
-        //p("Modified XPath::boundDocument =>" + modifiedXPath +
-        //    "::" + boundDocument );
-         
-        return boundDocument;
-    }
-    
-
-    //*********************************************************************
-    // 
-    
-    
-    //*********************************************************************
     // Static support for context retrieval from parent <forEach> tag
     
     public static Node getContext(Tag t) throws JspTagException {
@@ -506,7 +294,7 @@ public class XPathUtil {
         (ForEachTag) TagSupport.findAncestorWithClass(
         t, ForEachTag.class);
         if (xt == null)
-            return null;
+            return newEmptyDocument();
         else
             return (xt.getContext());
     }
