@@ -45,7 +45,7 @@
     <parent>
         <groupId>net.java</groupId>
         <artifactId>jvnet-parent</artifactId>
-        <version>1</version>
+        <version>3</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -70,14 +70,14 @@
             <id>kchung</id>
             <name>Kin-man Chung</name>
             <url>http://blogs.sun.com/kchung/</url>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle Corporation</organization>
             <roles>
                 <role>lead</role>
             </roles>
         </developer>
     </developers>  
 
-    <url>http://jsp.java.net</url>
+    <url>http://jstl.java.net</url>
     <organization>
         <name>GlassFish Community</name>
         <url>http://glassfish.org</url>
@@ -147,6 +147,7 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
+                <version>1.4.3</version>
                 <configuration>
                     <!-- Enable the plugin for hk2-jar packaging type -->
                     <supportedProjectTypes>
@@ -209,7 +210,7 @@
                           <packages>org.apache.taglibs</packages>
                         </group>
                       </groups>
-                      <bottom> Copyright (c) 1999-2011 Oracle and/or its affiliates. All Rights Reserved. Use is subject to license terms. </bottom>
+                      <bottom> Copyright (c) 1999-2012 Oracle and/or its affiliates. All Rights Reserved. Use is subject to license terms. </bottom>
                     </configuration>
                   </execution>
                 </executions>
