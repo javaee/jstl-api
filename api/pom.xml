@@ -61,7 +61,7 @@
         <extensionName>javax.servlet.jsp.jstl</extensionName>
         <bundle.symbolicName>javax.servlet.jsp.jstl-api</bundle.symbolicName>
         <vendorName>Oracle Corporation</vendorName>
-        <findbugs.version>2.3.1</findbugs.version>
+        <findbugs.version>2.5.2</findbugs.version>
         <findbugs.exclude />
         <findbugs.threshold>High</findbugs.threshold>
     </properties>

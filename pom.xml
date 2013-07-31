@@ -54,6 +54,7 @@ he.org/maven-v4_0_0.xsd">
 
     <properties>
         <findbugs.exclude></findbugs.exclude>
+        <findbugs.version>2.5.2</findbugs.version>
     </properties>
 
     <build>
@@ -84,7 +85,7 @@ he.org/maven-v4_0_0.xsd">
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.1</version>
+                <version>${findbugs.version}</version>
                 <configuration>
                     <threshold>High</threshold>
                     <excludeFilterFile>${findbugs.exclude}</excludeFilterFile>
@@ -118,7 +119,7 @@ he.org/maven-v4_0_0.xsd">
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.1</version>
+                <version>${findbugs.version}</version>
                 <configuration>
                     <threshold>High</threshold>
                     <excludeFilterFile>${findbugs.exclude}</excludeFilterFile>
