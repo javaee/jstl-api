@@ -61,7 +61,7 @@
         <bundle.symbolicName>org.glassfish.web.javax.servlet.jsp.jstl</bundle.symbolicName>
         <vendorName>Oracle Corporation</vendorName>
         <findbugs.version>2.5.2</findbugs.version>
-        <findbugs.exclude />
+        <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
         <findbugs.threshold>High</findbugs.threshold>
     </properties>
 
@@ -69,7 +69,6 @@
         <developer>
             <id>kchung</id>
             <name>Kin-man Chung</name>
-            <url>http://blogs.sun.com/kchung/</url>
             <organization>Oracle Corporation</organization>
             <roles>
                 <role>lead</role>

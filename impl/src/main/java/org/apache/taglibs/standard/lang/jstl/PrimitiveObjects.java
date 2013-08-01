@@ -109,9 +109,10 @@ class PrimitiveObjects
   //-------------------------------------
   public static Byte getByte (byte pValue)
   {
-    if (pValue >= BYTE_LOWER_BOUND &&
-	pValue <= BYTE_UPPER_BOUND) {
-      return mBytes [((int) pValue) - BYTE_LOWER_BOUND];
+    int iValue = pValue & 0xff;
+    if (iValue >= BYTE_LOWER_BOUND &&
+	iValue <= BYTE_UPPER_BOUND) {
+      return mBytes [iValue - BYTE_LOWER_BOUND];
     }
     else {
       return Byte.valueOf(pValue);

@@ -1,0 +1,21 @@
+<FindBugsFilter>
+    <Match>
+        <Class name="org.apache.taglibs.standard.extra.spath.ASCII_CharStream"/>
+    </Match>
+    <Match>
+        <Class name="org.apache.taglibs.standard.extra.spath.ASCII_UCodeESC_CharStream"/>
+    </Match>
+    <Match>
+        <Class name="org.apache.taglibs.standard.lang.jstl.parser.SimpleCharStream"/>
+    </Match>
+    <Match>
+        <Class name="org.apache.taglibs.standard.lang.jstl.test.EvaluationTest"/>
+    </Match>
+    <Match>
+        <Class name="org.apache.taglibs.standard.lang.jstl.test.ParserTest"/>
+    </Match>
+    <Match>
+        <Class name="org.apache.taglibs.standard.tag.common.core.Util"/>
+        <Method name="URLEncode"/>
+    </Match>
+</FindBugsFilter>
