@@ -459,6 +459,10 @@ public abstract class ImportSupport extends BodyTagSupport
 	    public void write(int b) throws IOException {
 		bos.write(b);
 	    }
+            public void flush() throws IOException {
+                pageContext.getOut().write(getString());
+                bos.reset();
+            }
 	};
 
 	/** 'True' if getWriter() was called; false otherwise. */
