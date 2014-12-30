@@ -70,6 +70,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyTagSupport;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -161,13 +162,25 @@ public abstract class TransformSupport extends BodyTagSupport {
 	    dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
             dbf.setValidating(false);
+            try {
+                dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            } catch (ParserConfigurationException e) {
+                throw new AssertionError("Parser does not support secure processing");
+            }
 	}
         if (db == null)
 	    db = dbf.newDocumentBuilder();
 
 	// set up the TransformerFactory if necessary
-        if (tf == null)
+        if (tf == null) {
             tf = TransformerFactory.newInstance();
+            try {
+                tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            } catch (TransformerConfigurationException e) {
+                throw new AssertionError(
+                        "TransformerFactory does not support secure processing");
+            }
+        }
 
 	//************************************
 	// Produce transformer
