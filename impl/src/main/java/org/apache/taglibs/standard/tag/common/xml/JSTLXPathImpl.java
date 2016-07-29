@@ -67,11 +67,11 @@ import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 import javax.xml.xpath.XPathExpression;
 
-import org.apache.xml.dtm.DTM;
-import org.apache.xpath.*;
-import org.apache.xpath.objects.XObject;
-import org.apache.xpath.res.XPATHErrorResources;
-import org.apache.xalan.res.XSLMessages;
+import com.sun.org.apache.xml.internal.dtm.DTM;
+import com.sun.org.apache.xpath.internal.*;
+import com.sun.org.apache.xpath.internal.objects.XObject;
+import com.sun.org.apache.xpath.internal.res.XPATHErrorResources;
+import com.sun.org.apache.xalan.internal.res.XSLMessages;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.DOMImplementation;
@@ -105,8 +105,7 @@ public class JSTLXPathImpl implements javax.xml.xpath.XPath {
     private XPathVariableResolver origVariableResolver;
     private XPathFunctionResolver origFunctionResolver;
     private NamespaceContext namespaceContext=null;
-    private org.apache.xpath.jaxp.JAXPPrefixResolver prefixResolver;
-
+    private com.sun.org.apache.xpath.internal.jaxp.JAXPPrefixResolver prefixResolver;
     // By default Extension Functions are allowed in XPath Expressions. If 
     // Secure Processing Feature is set on XPathFactory then the invocation of
     // extensions function need to throw XPathFunctionException
@@ -185,7 +184,7 @@ public class JSTLXPathImpl implements javax.xml.xpath.XPath {
             throw new NullPointerException( fmsg ); 
         }
         this.namespaceContext = nsContext;
-        this.prefixResolver = new org.apache.xpath.jaxp.JAXPPrefixResolver ( nsContext );
+        this.prefixResolver = new com.sun.org.apache.xpath.internal.jaxp.JAXPPrefixResolver ( nsContext );
     }
 
     /**
@@ -236,20 +235,21 @@ public class JSTLXPathImpl implements javax.xml.xpath.XPath {
     
     private XObject eval(String expression, Object contextItem)
         throws javax.xml.transform.TransformerException {
-        org.apache.xpath.XPath xpath = new org.apache.xpath.XPath( expression,
-            null, prefixResolver, org.apache.xpath.XPath.SELECT );
-        org.apache.xpath.XPathContext xpathSupport = null;
+        com.sun.org.apache.xpath.internal.XPath xpath = new com.sun.org.apache.xpath.internal.XPath( expression,
+            null, prefixResolver, com.sun.org.apache.xpath.internal.XPath.SELECT ); 
+        com.sun.org.apache.xpath.internal.XPathContext xpathSupport = null;
         if ( functionResolver != null ) {
-            org.apache.xpath.jaxp.JAXPExtensionsProvider jep = null;
-                    new org.apache.xpath.jaxp.JAXPExtensionsProvider(functionResolver, featureSecureProcessing );
-            xpathSupport = new org.apache.xpath.XPathContext( jep );
+            com.sun.org.apache.xpath.internal.jaxp.JAXPExtensionsProvider jep = 
+                    new com.sun.org.apache.xpath.internal.jaxp.JAXPExtensionsProvider(
+                    functionResolver, featureSecureProcessing );
+            xpathSupport = new com.sun.org.apache.xpath.internal.XPathContext( jep );
         } else { 
-            xpathSupport = new org.apache.xpath.XPathContext();
+            xpathSupport = new com.sun.org.apache.xpath.internal.XPathContext();
         }
 
         XObject xobj = null;
         
-        xpathSupport.setVarStack(new org.apache.xpath.jaxp.JAXPVariableStack(variableResolver));
+        xpathSupport.setVarStack(new com.sun.org.apache.xpath.internal.jaxp.JAXPVariableStack(variableResolver));
         
         // If item is null, then we will create a a Dummy contextNode
         if ( contextItem instanceof Node ) {
@@ -377,7 +377,7 @@ public class JSTLXPathImpl implements javax.xml.xpath.XPath {
         }
         // JSTLXPathConstants.OBJECT
         if ( returnType.equals( JSTLXPathConstants.OBJECT ) ) {
-            if (resultObject instanceof org.apache.xpath.objects.XNodeSet)
+            if (resultObject instanceof com.sun.org.apache.xpath.internal.objects.XNodeSet)
                 return resultObject.nodelist();
             else 
                 return resultObject.object();

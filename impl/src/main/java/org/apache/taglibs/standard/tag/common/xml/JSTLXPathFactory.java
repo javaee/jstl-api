@@ -58,7 +58,7 @@
 
 package org.apache.taglibs.standard.tag.common.xml;
 
-import org.apache.xpath.jaxp.XPathFactoryImpl;
+import com.sun.org.apache.xpath.internal.jaxp.XPathFactoryImpl;
 
 /**
  * This factory class is added to provide access to our own implementation
