@@ -51,7 +51,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.web</groupId>
     <artifactId>javax.servlet.jsp.jstl</artifactId>
-    <version>1.2.5-SNAPSHOT</version>
+    <version>1.2.5-b02</version>
     <packaging>jar</packaging>
     <name>JavaServer Pages (TM) TagLib Implementation</name>
 
@@ -140,6 +140,64 @@
                         </manifestEntries>
                     </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.4.3</version>
+                <executions>
+                   <execution>
+                       <phase>package</phase>
+                       <goals>
+                           <goal>shade</goal>
+                       </goals>
+                       <configuration>
+                           <artifactSet>
+                                  <includes>
+                                      <include>xalan:xalan</include>
+                                  </includes>
+                           </artifactSet>
+                           <filters>
+                               <filter>
+                                   <artifact>xalan:xalan</artifact>
+                                   <excludes>
+                                      <exclude>META-INF/**</exclude>
+                                   </excludes>
+                                </filter>
+                           </filters>
+                           <relocations>
+                               <relocation>
+                                    <pattern>org.apache.xpath</pattern>
+                                    <shadedPattern>com.oracle.wls.shaded.org.apache.xpath</shadedPattern>
+                               </relocation>
+                               <relocation>
+                                    <pattern>org.apache.xml</pattern>
+                                    <shadedPattern>com.oracle.wls.shaded.org.apache.xml</shadedPattern>
+                               </relocation>
+                               <relocation>
+                                    <pattern>org.apache.xalan</pattern>
+                                    <shadedPattern>com.oracle.wls.shaded.org.apache.xalan</shadedPattern>
+                               </relocation>
+                               <relocation>
+                                    <pattern>org.apache.regexp</pattern>
+                                    <shadedPattern>com.oracle.wls.shaded.org.apache.regexp</shadedPattern>
+                               </relocation>
+                               <relocation>
+                                    <pattern>org.apache.bcel</pattern>
+                                    <shadedPattern>com.oracle.wls.shaded.org.apache.bcel</shadedPattern>
+                               </relocation>
+                               <relocation>
+                                    <pattern>java_cup.runtime</pattern>
+                                    <shadedPattern>com.oracle.wls.shaded.java_cup.runtime</shadedPattern>
+                               </relocation>
+                               <relocation>
+                                    <pattern>trax</pattern>
+                                    <shadedPattern>com.oracle.wls.shaded.trax</shadedPattern>
+                               </relocation>
+                           </relocations>
+                       </configuration>
+                   </execution>
+                </executions>
             </plugin>
 
             <!-- Configure maven-bundle-plugin to generate OSGi manifest.
@@ -325,6 +383,11 @@
             <groupId>javax.servlet.jsp.jstl</groupId>
             <artifactId>jstl-api</artifactId>
             <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>xalan</groupId>
+            <artifactId>xalan</artifactId>
+            <version>2.7.1</version>
         </dependency>
     </dependencies>
 </project>
