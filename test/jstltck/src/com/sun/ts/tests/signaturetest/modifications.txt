@@ -1,0 +1,57 @@
+8/7/02
+
+This file contains the list of modifications made to the spider workspace to
+enable the new signature test framework and remove the old framework.
+
+- All files were removed from the src/com/sun/ts/tests/signaturetest directory.
+  This includes all files in any sub-directories.
+- The new test framework code was added to the src/com/sun/ts/tests/signaturetest
+  directory.  Files include:
+    README                     SigTestData.java           j2ee/
+    SCCS/                      SigTestEE.java             modifications.txt
+    SampleSigTest.java.txt     SigTestResult.java         record-build.xml
+    SampleSigTestEE.java.txt   SigTestUtil.java           signature-repository/
+    SigTest.java               build.xml
+  NOTE: Do not ship record-build.xml with any deliverable.
+- A signaturerepository directory was created under the
+  src/com/sun/ts/tests/signaturetest directory.  This directory holds the
+  signature files and a README file.
+- A j2ee directory was created under the src/com/sun/ts/tests/signaturetest
+  directory.  This directory contains the J2EE TCK (CTS) signature tests.
+  Files include:
+    J2EESigTest.java   SCCS/              build.xml
+
+INSTALL DIRECTORY
+-----------------
+- Added a sig-test.map file to the install/j2ee/bin.  This file contains the
+  package versions to be used by the J2EE TCK sig tests.
+- Added "permission java.lang.RuntimePermission "createClassLoader";" and 
+  "permission java.lang.reflect.ReflectPermission "suppressAccessChecks";"
+  to the install/j2ee/bin/java.policy file.
+- Added "permission java.lang.RuntimePermission "createClassLoader";" and
+  "permission java.lang.reflect.ReflectPermission "suppressAccessChecks";"
+  to the install/j2ee/bin/server_policy.append file.
+- Appended ${ts.home}/lib/apiCheck.jar to the ts.classpath property in the
+  file install/j2ee/bin/build.properties
+- Modified the classpath for the property env.ts_unix.command.testExecute in
+  file install/j2ee/bin/ts.jte by adding :${TS_HOME}/lib/apiCheck.jar.
+- Modified the classpath for the property env.ts_win32.command.testExecute in
+  file install/j2ee/bin/ts.jte by adding ;${TS_HOME}\\lib\\apiCheck.jar
+
+TS HARNESS CHANGES
+------------------
+- Added a loging utility to support API check.  Simple adapter pattern to
+  convert API check logging calls to TestUtil.logMsg calls.  Added files:
+    src/com/sun/ts/lib/util/SigLogIntf.java
+    src/com/sun/ts/lib/util/SigLogAdapter.java
+  NOTE: This change requires the lib/tsharness.jar to be rebuilt.
+- Added API check utility by adding file lib/apiCheck.jar.
+- Added API check record utility by adding file lib/recordApiCheck.jar.  NOTE
+  do not ship this jar with any deliverable.
+
+API CHECK CHANGES
+-----------------
+- API Check now has a dependency on tsharness.jar for logging facilities.
+- Changed the logging facility of API check so it uses TestUtil.
+- Changed all System.err calls to use TestUtil as well.
+- Prevented sub-packages from automatically being checked.

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4"
+         xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+    <description>FMT Tag Library TCK Tests for JSTL</description>
+    <display-name>jstl_fmt_resenc_web</display-name>
+    <filter>
+        <display-name>ResponseFormatFilter</display-name>
+        <filter-name>ResponseFormatFilter</filter-name>
+        <filter-class>com.sun.ts.tests.jstl.common.filters.FormatFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>ResponseFormatFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+</web-app>

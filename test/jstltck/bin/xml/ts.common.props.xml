@@ -1,0 +1,337 @@
+<?xml version="1.0"?>
+
+<project name="CommonProps" basedir=".">
+
+    <!-- 
+    This is a common import file that contains properties that are shared
+    by all build files.  
+    -->
+    
+    <property environment="env"/>
+    
+    <dirname property="CommonProps.basedir" file="${ant.file.CommonProps}"/>
+    
+    <condition property="dir.path.sep" value="\\"
+                                       else="/">
+        <os family="windows"/>
+    </condition>
+
+    <property name="dir.sep"       value="${dir.path.sep}"/>
+    <property name="dirsep"        value="${dir.path.sep}"/>
+
+    <condition property="pathsep" value=";"
+                                  else=":">
+        <os family="windows"/>
+    </condition>
+
+    <!-- Set ts.home based upon whether this file is in the install dir 
+         or not
+    -->
+    <condition property="ts.home" 
+               value="${CommonProps.basedir}${dir.path.sep}..${dir.path.sep}..${dir.path.sep}..${dir.path.sep}.."
+               else="${CommonProps.basedir}${dir.path.sep}..${dir.path.sep}..">
+        <contains string="${CommonProps.basedir}" 
+                 substring="install${dir.path.sep}common${dir.path.sep}bin${dir.path.sep}xml"/>
+    </condition>
+    <echo message="ts.home = ${ts.home}"/>
+    
+    <!-- Need to set jdk.home in case java.home points to a JRE -->
+    <condition property="jdk.home" 
+               value="${java.home}"
+               else="${java.home}${dir.path.sep}..">
+        <available file="${java.home}${dir.path.sep}lib${dir.path.sep}tools.jar"/>
+    </condition>
+    
+    <!-- Common properties -->
+    <property name="dist.dir"        value="${ts.home}/dist"/>
+    <property name="src.dir"         value="${ts.home}/src"/>
+    <property name="lib.dir"         value="${ts.home}/lib"/>
+    <property name="tmp.dir"         value="${ts.home}/tmp"/>
+    <property name="weblib.dir"      value="${ts.home}/weblib"/>
+    <property name="install.dir"     value="${ts.home}/install"/>
+    <property name="common.bin.dir"  value="${ts.home}/bin"/>
+    
+    <taskdef resource="net/sf/antcontrib/antlib.xml"
+             classpath="${lib.dir}/ant-contrib.jar"/>
+    
+    <property name="ant.home" value="${ts.home}/tools/ant"/>
+    <property name="ant.jars" value="${ant.home}/lib/ant.jar:
+                                     ${ant.home}/lib/ant-launcher.jar:
+                                     ${ant.home}/lib/ant-nodeps.jar"/>
+
+    <!-- Set class.dir based on the setting of build.vi-->
+    <if>
+        <equals arg1="${build.vi}" arg2="true"/>
+    <then>
+        <property name="class.dir" value="${ts.home}/classes_vi_built"/>
+    </then>
+    <else>
+        <property name="build.vi" value="false"/>
+        <property name="class.dir" value="${ts.home}/classes"/>
+    </else>
+    </if>
+  
+    <mkdir dir="${class.dir}"/>
+    <mkdir dir="${dist.dir}"/>
+    <mkdir dir="${tmp.dir}"/>
+    <mkdir dir="${weblib.dir}"/>
+    
+    <!-- Set the deliverable bin dir based on whether ant setup was run
+         (as in a bundle) or we're in the install deliverable dir -->
+    <if>
+        <available file="${CommonProps.basedir}/../ts.jte"/>
+    <then>
+        <property name="in.workspace" value="false"/>
+        <property file="${CommonProps.basedir}/../ts.jte"/>
+        <property name="bin.dir" value="${ts.home}${dir.path.sep}bin"/>
+        <echo message="The deliverable currently in use is ${bin.dir}."/>
+    </then>
+    <else>
+        <property name="in.workspace" value="true"/>
+        <if>
+            <isset property="env.deliverabledir"/>
+        <then>
+            <property name="deliverable.dir" value="${env.deliverabledir}"/>
+            <property name="deliverabledir" value="${env.deliverabledir}"/>
+        </then>
+        <elseif>
+            <isset property="deliverabledir"/>
+          <then>
+              <property name="deliverable.dir" value="${deliverabledir}"/>
+          </then>
+        </elseif>
+        <else>
+            <!-- Let's try and figure out the deliverable.dir based on what 
+            src dir we're in
+            -->
+            <if>
+                <contains string="${basedir}" 
+                          substring="signaturetest"/>
+                <then>
+                    <echo message="basedir = ${basedir}"/>
+                    
+                    <propertyregex property="deliverable.dir"
+                                   input="${basedir}${dir.path.sep}"
+                                   regexp=".*[\/|\\]sun[\/|\\]ts[\/|\\]tests[\/|\\]signaturetest[\/|\\](.*?)[\/|\\]"
+                                   select="\1"
+                                   casesensitive="false" />
+                </then>
+                <elseif>
+                    <contains string="${basedir}" 
+                              substring="${dir.path.sep}install${dir.path.sep}"/>
+                    <then>
+                        <propertyregex property="deliverable.dir"
+                                       input="${basedir}${dir.path.sep}"
+                                       regexp=".*[\/|\\]install[\/|\\](.*?)[\/|\\]"
+                                       select="\1"
+                                       casesensitive="false" />
+                    </then>    
+                </elseif>
+                <elseif>
+                    <contains string="${basedir}" 
+                              substring="com${dir.path.sep}sun${dir.path.sep}ts${dir.path.sep}lib"/>
+                    <then>
+                        <property name="deliverable.dir" value="j2ee"/>
+                    </then>    
+                </elseif>
+                <else>
+                    <propertyregex property="deliverable.dir"
+                                   input="${basedir}${dir.path.sep}"
+                                   regexp=".*[\/|\\]sun[\/|\\]ts[\/|\\]tests[\/|\\](.*?)[\/|\\]"
+                                   select="\1"
+                                   casesensitive="false" />
+                </else>
+            </if>  
+        </else>
+        </if>
+          
+        <if>
+            <equals arg1="${deliverable.dir}" arg2="javaee"/>
+        <then>
+            <var name="deliverable.dir" value="j2ee"/>
+        </then>
+        </if>
+        
+        <if>
+            <available file="${ts.home}${dir.path.sep}install${dir.path.sep}${deliverable.dir}${dir.path.sep}bin${dir.path.sep}ts.jte"/>
+        <then>
+            <echo message="The deliverable currently in use is ${ts.home}${dir.path.sep}install${dir.path.sep}${deliverable.dir}."/>
+        </then>
+        <else>
+            <fail message="There is no deliverabledir by the name of ${deliverable.dir} under ${ts.home}${dir.path.sep}install.  Please set deliverabledir in your environment"/>
+        </else>
+        </if>
+        
+        <property name="bin.dir" value="${CommonProps.basedir}/../../install/${deliverable.dir}/bin"/>
+        <property file="${bin.dir}/ts.jte"/>
+        
+        <copy file="${bin.dir}/../other/testsuite.jtt" todir="${src.dir}"
+              overwrite="true" failonerror="false"/>
+        <copy file="${bin.dir}/../other/vehicle.properties" todir="${src.dir}"
+              overwrite="true" failonerror="false"/>
+    </else>
+    </if>
+    
+    <!-- Set this until we get rid of it for the bundle xml files to use-->
+    <property name="deliverable.name" value="${deliverable.dir}"/>
+    
+    <!-- Presetdef for tasks using ant_sun.jar -->
+    <presetdef name="ts.taskdef">
+        <taskdef classpath="${lib.dir}/ant_sun.jar"/>
+    </presetdef>
+
+    <presetdef name="ts.verbose">
+        <!--
+          The ts.verbose task is used to print messages only when running ant with the -v  or debug options.
+        -->
+        <echo level="verbose"/>
+    </presetdef>
+    
+    <!-- Override antcall so that deliverable.dir maintains its value across projects -->
+    <!--<presetdef name="antcall">
+        <antcall>
+            <param name="deliverable.dir" value="${deliverable.dir}"/>
+        </antcall>
+    </presetdef>
+    -->
+    <!-- Findbugs home directory -->
+    <property name="findbugs.dir"   value="${ts.home}/tools/findbugs"/>
+
+    <!-- Common tasks used across the workspace and packaged in ant_sun.jar -->
+    <ts.taskdef name="translatepath" 
+                classname="com.sun.ant.taskdefs.common.PathTranslator"/>
+    <ts.taskdef name="elementappend" 
+                classname="com.sun.ant.taskdefs.common.ElementAppend"/>
+    <ts.taskdef name="dosubdirs" 
+                classname="com.sun.ant.taskdefs.common.DoSubdirs"/>
+    <ts.taskdef name="dotarget" 
+                classname="com.sun.ant.taskdefs.common.DoTarget"/>
+    <ts.taskdef name="appendafter" 
+                classname="com.sun.ant.taskdefs.common.AppendAfter"/>
+    <ts.taskdef name="insertbefore" 
+                classname="com.sun.ant.taskdefs.common.InsertBefore"/>
+    <ts.taskdef name="propertyindex" 
+                classname="com.sun.ant.taskdefs.common.PropertyIndex"/>
+    <ts.taskdef name="undeployall" 
+                classname="com.sun.ant.taskdefs.common.UndeployAll"/>
+    <ts.taskdef name="encode" classname="com.sun.ant.taskdefs.common.Encoder"/>
+    <ts.taskdef name="string" classname="com.sun.ant.taskdefs.common.MyString"/>
+    <ts.taskdef name="spawn" classname="com.sun.ant.taskdefs.s1as.SpawnTask"/>
+    <ts.taskdef name="runcts" classname="com.sun.ant.taskdefs.common.RunCTS"/>
+    <taskdef name="modifyxml" classname="com.sun.ant.taskdefs.xml.ModifyXML"
+             classpath="${lib.dir}/ant_sun.jar:${lib.dir}/jdom.jar:${lib.dir}/jaxen-core.jar:${lib.dir}/jaxen-jdom.jar:${lib.dir}/saxpath.jar"/>
+    <taskdef name="configctsjcov" 
+             classname="com.sun.ant.taskdefs.common.JCOVCTSConfig"
+             classpath="${lib.dir}/ant_sun.jar:${lib.dir}/jdom.jar"/>
+    <taskdef name="configctsemma" 
+             classname="com.sun.ant.taskdefs.common.EMMACTSConfig"
+             classpath="${lib.dir}/ant_sun.jar:${lib.dir}/jdom.jar"/>
+    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
+             classpath="${findbugs.dir}/lib/findbugs-ant.jar"
+             onerror="ignore"/>
+    
+    <property file="${src.dir}/vehicle.properties"/>
+                             
+    <property name="ejbvehicle.classes"         value=""/>
+    <property name="servletvehicle.classes"     value=""/>
+    <property name="jspvehicle.classes"         value=""/>
+    <property name="appclientvehicle.classes"   value=""/>
+    
+    <!-- Package directories -->
+    <property name="lib.pkg.dir"     value="com/sun/ts/lib"/>
+    <property name="tests.pkg.dir"   value="com/sun/ts/tests"/>
+    <property name="sig.pkg.dir"     value="${tests.pkg.dir}/signaturetest"/>
+    <property name="harness.pkg.dir" value="${lib.pkg.dir}/harness"/>
+    <property name="impl.pkg.dir"    value="${lib.pkg.dir}/implementation"/>
+    <property name="util.pkg.dir"    value="${lib.pkg.dir}/util"/>
+    <property name="porting.pkg.dir" value="${lib.pkg.dir}/porting"/>
+    
+    <property name="vehicle.pkg.dir" value="${tests.pkg.dir}/common/vehicle"/>
+    <property name="webservices.pkg.dir" value="${tests.pkg.dir}/common/webservices"/>
+    <property name="vehicle.src.dir" value="${ts.home}/src/${vehicle.pkg.dir}"/>
+        
+    <!-- Rebuildable directory related properties -->
+    <property name="vi.build.string" value="vi_built"/>
+    <property file="${src.dir}/${harness.pkg.dir}/rebuildable.properties"/>
+    <property name="rebuildable" value="false"/>
+    <property name="rebuildable.prop.name" value=""/>
+    <property name="saved.pkg.dir" value=""/>
+
+    <!--
+    <property name="vi.xml.impl.dir" value="${common.bin.dir}/xml/implementation/${vi.implementation}"/>
+    <property name="ri.xml.impl.dir" value="${common.bin.dir}/xml/implementation/${ri.implementation}"/>
+-->
+
+    <!-- Extension list library version number -->
+    <property name="extension.lib.version"   value="1.4"/>
+
+    <propertyregex property="pkg.dir"
+                   input="${basedir}"
+                   regexp=".*src[\/|\\](.*)"
+                   select="\1"
+                   casesensitive="true"
+                   override="true"/>
+                   
+    <!-- dynamically compute the java package for the current test directory, e.g.,
+         com.sun.ts.tests.samples.ejb.ee.simpleHello  -->
+    <propertyregex property="package"
+                        input="${pkg.dir}"
+                        regexp="[\/|\\]" replace="\."
+                        casesensitive="true"
+                        override="true"/>
+
+    <!-- dynamically compute the default application client main class, e.g.,
+         com.sun.ts.tests.ejb30.bb.session.stateless.basic.Client -->
+    <property name="client" value="${package}.Client"/>
+
+    <property name="default.vehicles" value="ejb servlet jsp appclient"/>
+    <property name="test.base.classes"  
+              value="${harness.pkg.dir}/EETest*.class"/>
+
+    <pathconvert property="src.path">
+        <path>
+            <pathelement location="${src.dir}"/>
+        </path>
+    </pathconvert>
+    
+    <!-- Variables -->
+
+    <!--
+        Store the vehicles that are processed into a variable that is visible to the importing
+        build files.  This allows leaf build files the ability to run specific sets of tasks
+        based on the vehicles that were built.
+    -->    
+    <var name="vehicle.prop.name" value=""/>
+    <var name="vehicles" value="${default.vehicles}"/>               
+
+    <!--<if>
+        <os family="windows"/>
+    <then>
+        <property name="dir.path.sep" value="\"/>
+        <property name="pathsep" value=";"/>
+    </then>
+    <else>
+        <property name="dir.path.sep" value="/"/>
+        <property name="pathsep" value=":"/>
+    </else>    
+    </if>
+    -->
+    
+    <!-- Set ts.home based upon whether this file is in the install dir 
+         or not
+    -->
+    <!--
+    <if>
+        <contains string="${CommonProps.basedir}" 
+                 substring="install${dir.path.sep}common${dir.path.sep}bin${dir.path.sep}xml"/>
+    <then>
+        <property name="ts.home" 
+        value="${CommonProps.basedir}${dir.path.sep}..${dir.path.sep}..${dir.path.sep}..${dir.path.sep}.."/>
+    </then>
+    <else>
+        <property name="ts.home" 
+        value="${CommonProps.basedir}${dir.path.sep}..${dir.path.sep}.."/>
+    </else>
+    </if>
+    -->
+</project>

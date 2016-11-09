@@ -1,0 +1,45 @@
+#
+# Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+# SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+#
+
+#
+# $Id: ts.jtx 60679 2009-12-02 19:19:51Z dougd $
+#
+
+#
+# Bug ID: 6905929
+#
+com/sun/ts/tests/jstl/compat/onedotzero/JSTLClient.java#positiveIfVarTest
+
+#
+# Bug ID: 6679656
+#
+com/sun/ts/tests/jstl/spec/core/iteration/foreach/JSTLClient.java#positiveItemsCollectionTest
+
+#
+# Bug ID: 6581094
+#
+com/sun/ts/tests/jstl/spec/sql/transaction/JSTLClient.java#positiveTxIsolationAttributeRead_CommittedTest
+
+#
+# Bug ID: 6471034
+#
+com/sun/ts/tests/jstl/spec/core/urlresource/url/JSTLClient.java#positiveUrlContextTest
+
+#
+# Bug ID: 6497749
+#
+com/sun/ts/tests/jstl/spec/core/iteration/foreach/JSTLClient.java#positiveForEachDeferredValueTest3
+
+#
+# Bug ID: 6575739
+#
+com/sun/ts/tests/jstl/spec/etu/functions/JSTLClient.java#functionsStartsWithEmptyPrefixTest
+com/sun/ts/tests/jstl/spec/etu/functions/JSTLClient.java#functionsEndsWithNullStringTest
+com/sun/ts/tests/jstl/spec/etu/functions/JSTLClient.java#functionsEndsWithEmptyPrefixTest
+
+#
+# Bug ID: 6650195
+#
+com/sun/ts/tests/jstl/spec/core/urlresource/url/JSTLClient.java#positiveUrlRelUrlRewrittenTest

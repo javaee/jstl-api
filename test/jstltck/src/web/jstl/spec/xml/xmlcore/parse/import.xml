@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE root [
+   <!ENTITY external SYSTEM "xfiles/resolve.xml">
+]>
+
+<root>
+    &external;
+</root>
+

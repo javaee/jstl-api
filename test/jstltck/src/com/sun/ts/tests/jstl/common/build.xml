@@ -1,0 +1,32 @@
+<project name="jstl_xml" basedir="." default="usage">
+
+    <!-- IMPORTS -->
+    <import file="../../../../../../../bin/xml/ts.import.xml"/>    
+
+    <target name="build.tck.jar" depends="compile" unless="common.jar.exists">
+        <mkdir dir="${ts.home}/jartmp/META-INF"/>
+        <mkdir dir="${ts.home}/jartmp/com/sun/ts/tests/jstl/common"/>
+        <copy todir="${ts.home}/jartmp/META-INF">
+            <fileset dir="${ts.home}/src/com/sun/ts/tests/jstl/common/tags/tlds" includes="**/*.tld" />
+        </copy>
+        <copy todir="${ts.home}/jartmp">
+            <fileset dir="${ts.home}/classes"
+              includes="com/sun/ts/tests/jstl/common/"
+              excludes="**/*.tld, com/sun/ts/tests/jstl/common/client/"/>
+        </copy>
+        <copy todir="${ts.home}/jartmp/com/sun/ts/tests/jstl/common/resources">
+            <fileset dir="${ts.home}/src/com/sun/ts/tests/jstl/common/resources" includes="*.properties"/>
+        </copy>
+        <chmod perm="u+rw" file="${ts.home}/lib/jstltck-common.jar"/>
+        <jar destfile="${ts.home}/lib/jstltck-common.jar" basedir="${ts.home}/jartmp" />
+        <delete dir="${ts.home}/jartmp"/>
+        <echo message="Successfully built jstltck-common.jar to ${ts.home}/lib . May need to check it in."/>
+    </target>
+
+    <target name="dist" depends="build.tck.jar">
+      <copy todir="${ts.home}/weblib">
+        <fileset dir="${ts.home}/lib/"
+          includes="jstltck-common.jar"/>
+      </copy>
+    </target>
+</project>

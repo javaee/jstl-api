@@ -1,0 +1,4 @@
+1. replace two class:	com.sun.ts.tests.jstl.common.wrappers.TckConnectionWrapper;
+			com.sun.ts.tests.jstl.common.wrappers.TckDataSourceWrapper;
+
+

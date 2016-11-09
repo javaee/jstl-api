@@ -1,0 +1,1380 @@
+<?xml version="1.0"?>
+<project name="Commonxml" basedir=".">
+
+    <!-- ========================================================== -->
+    <!--  CTS s1as.xml & javaee_ri.xml Common Properties & targets  -->
+    <!-- ========================================================== -->
+
+    <!-- IMPORTS -->
+    <import file="../../ts.common.props.xml"/>
+
+    <property name="server.start.delay.mins" value="5"/>
+    <property name="server" value="server"/> 
+    <property name="resources.dottedname.prefix" value="domain.resources"/>
+    <property name="server.policy" value="server.policy" />
+    <property name="server.policy.orig" value="${server.policy}_orig"/>
+    <property name="client.policy" value="client.policy" />
+    <property name="client.policy.orig" value="${client.policy}_orig"/>
+    <property name="sun-acc.xml.template" value="sun-acc.xml.template" />
+    <property name="sun-acc.xml.template.orig" value="sun-acc.xml.template.orig" />
+    <property name="timer.poolName" value="cts-derby-XA-pool"/>
+    <property name="derby.start.delay" value="10"/>
+    <property name="keystore.password" value="changeit"/>
+    <property name="server.cert.alias" value="s1as"/>
+    <property name="client.cert.alias" value="cts"/>
+    <property name="NSSConfigDir" value="${s1as.domain.dir}/${s1as.domain.name}/config" />
+    <property name="appclient.log.level" value="INFO"/>
+    <property name="appclient.log.dir" value="${ts.home}/tmp/appclient"/>
+ 
+    <!--
+         checkPlatform determines which OS is being utilized.
+         Also determine if this is the Java EE RI or S1AS
+    -->
+    <target name="checkPlatform" >
+        <condition property ="isUnixPlatform">
+           <os family="unix"/>
+        </condition>
+        <condition property ="isWindowsPlatform">
+           <os family="windows"/>
+        </condition>
+        <condition property ="os" value="unix">
+           <os family="unix"/>
+        </condition>
+        <condition property ="os" value="windows">
+           <os family="windows"/>
+        </condition>
+        <condition property ="isMac">
+           <os family="mac"/>
+        </condition>
+
+        <!-- Is the the Java EE RI or S1AS? -->
+        <condition property="is.ri">
+           <and>
+              <available file="${server.home}/README.install"/>
+              <available file="${server.home}/setup.xml"/>
+           </and>
+        </condition>
+    </target>
+
+    <!--
+      Check to see if we are using the pointbase pool, if so
+      we will skip pinging the connection pool.
+    -->
+    <target name="checkIfUsingDerbyPool" >
+        <condition property="usingDerbyPool">
+          <equals arg1="${jdbc.poolName}" arg2="${derby.poolName}" casesensitive="true" trim="true"/>
+      </condition>
+    </target> 
+
+    <!--
+         configUnix will be invoked when ant is being run on
+         unix/Linux.  It will configure the values for ${os}
+         and ${dir.sep}
+
+         Due to differences on how ant invokes external commands
+         on windows, we need to execute asadmin and imqusermgr
+         differently on each platform.
+    -->
+
+    <target name="configUnix" depends="checkPlatform" if="isUnixPlatform" >
+           <echo message="on unix"/>
+           <property name="dir.sep" value="/"/>
+           <property name="exec.asadmin" value="${cli.path}" />
+           <property name="exec.asadmin.part2" value="" />
+           <property name="exec.imqusermgr" value="${imqbin.loc}/imqusermgr" />
+           <property name="exec.imqusermgr.part2" value="" />
+           <property name="cert.file" value="${bin.dir}/certificates/cts_cert"/>
+           <property name="server.config.dir.path" value="${server.domain}/${server.config.dir}" />
+           <property name="cacerts.jks" value="${server.config.dir.path}/cacerts.jks"/>
+           <property name="keystore.jks" value="${server.config.dir.path}/keystore.jks"/>
+           <property name="cert8.db" value="${server.config.dir.path}/cert8.db"/>
+           <property name="key3.db" value="${server.config.dir.path}/key3.db"/>
+           <property name="secmod.db" value="${server.config.dir.path}/secmod.db"/>
+           <property name="exec.keytool" value= "${java.home}/bin/keytool" />
+           <property name="exec.keytool.part2" value= "" />
+           <property name="exec.certutil" value= "${server.home}/lib/certutil" />
+           <property name="exec.certutil.part2" value= "" />
+           <property name="password.file.template"
+                     value="${common.bin.dir}/xml/impl/glassfish/templates/password.template"/>
+           <property name="password.file" value="${bin.dir}/password.txt"/>
+           <property name="nodeagent.path" value="" />
+    </target>
+
+    <!--
+         configWindows will be invoked when ant is being run on
+         windows.  It will configure the values for ${os}
+         and ${dir.sep}
+
+         Due to differences on how ant invokes external commands
+         on windows, we need to execute asadmin and imqusermgr
+         differently on each platform.
+    -->
+
+    <target name="configWindows" depends="checkPlatform" if="isWindowsPlatform" >
+           <echo message="on windows"/>
+           <property name="dir.sep" value="\\"/>
+           <property name="exec.asadmin" value="cmd.exe" />
+           <property name="exec.asadmin.part2" value= " /c ${cli.path}" />
+           <property name="exec.imqusermgr" value="cmd.exe" />
+           <property name="exec.imqusermgr.part2" value="/c ${imqbin.loc}\imqusermgr" />
+           <property name="cert.file" value="${ts.home}\bin\certificates\cts_cert"/>
+           <property name="server.config.dir.path" value="${server.domain}\${server.config.dir}" />
+           <property name="cacerts.jks" value="${server.config.dir.path}\cacerts.jks"/>
+           <property name="keystore.jks" value="${server.config.dir.path}\keystore.jks"/>
+           <property name="cert8.db" value="${server.config.dir.path}\cert8.db"/>
+           <property name="key3.db" value="${server.config.dir.path}\key3.db"/>
+           <property name="secmod.db" value="${server.config.dir.path}\secmod.db"/>
+           <property name="exec.keytool" value="cmd.exe" />
+           <property name="exec.keytool.part2" value= " /c ${java.home}\bin\keytool" />
+           <property name="exec.certutil" value= "${server.home}\lib\certutil" />
+           <property name="exec.certutil.part2" value= " /c ${javaee.home}/lib/certutil" />
+           <property name="password.file.template"
+                     value="${ts.home}\bin\xml\impl\glassfish\templates\password.template"/>
+           <property name="password.file" value="${ts.home}\bin\password.txt"/>
+           <property name="nodeagent.path" value="--agentdir ${drive}\${sjsas.node.agent.dir.name}" />
+    </target>
+
+    <!--
+      checkForFiles determines if the following files exist:
+      server.policy_orig
+      client.policy_orig
+    -->
+    <target name="checkForFiles">
+        <available file="${server.domain}/${server.config.dir}/${server.policy.orig}"
+           type="file" property="found.server.policy.orig"/>
+        <available file="${server.home}/lib/appclient/${client.policy.orig}"
+           type="file" property="found.client.policy.orig"/>
+
+         <condition property="java.keystore.generated" >
+           <and>
+             <available  file="${keystore.jks}" type="file" />
+             <available  file="${cacerts.jks}" type="file" />
+           </and>
+         </condition>
+
+         <condition property="found.nss.databases" >
+           <and>
+             <available  file="${cert8.db}" type="file" />
+             <available  file="${key3.db}" type="file" />
+             <available  file="${secmod.db}" type="file" />
+           </and>
+         </condition>
+
+    </target>
+
+    <target name="setNSSConfigDir" >
+	<condition property="NSSConfigDir" value="${s1as.domain.dir}/${s1as.domain.name}/config">
+	  <equals arg1="${sjsas.env.type}" arg2="das" casesensitive="true" trim="true"/>
+	</condition>
+
+	<condition property="NSSConfigDir" value="${javaee.home}/nodeagents/${sjsas.nodeagent.name}/${sjsas.nodeinstance.name}/config">
+	  <equals arg1="${sjsas.env.type}" arg2="remote" casesensitive="true" trim="true"/>
+	</condition>
+
+	<condition property="NSSConfigDir" value="${javaee.home}/nodeagents/${sjsas.nodeagent.name}/${sjsas.nodeinstance.name}/config">
+	  <equals arg1="${sjsas.env.type}" arg2="cluster" casesensitive="true" trim="true"/>
+	</condition>
+
+    </target>
+
+    <!--
+      copy.server.policy makes an archive copy of the server.policy
+      file.
+    -->
+    <target name="copy.server.policy" unless="found.server.policy.orig">
+        <copy file="${server.domain}/${server.config.dir}/${server.policy}"
+              tofile="${server.domain}/${server.config.dir}/${server.policy.orig}"
+              overwrite="yes" />
+    </target>
+
+    <!--
+      copy.client.policy  makes an archive copy of the client.policy
+      file.
+    -->
+    <target name="copy.client.policy" unless="found.client.policy.orig">
+        <copy file="${server.home}/lib/appclient/${client.policy}"
+              tofile="${server.home}/lib/appclient/${client.policy.orig}"
+              overwrite="yes" />
+    </target>
+
+
+    <!--
+      concat.security concatinates the cts files required to create:
+      server.policy
+      client.policy
+
+      with the saved original S1AS copies of the above files.
+
+    -->
+    <target name="concat.security"
+            depends="checkForFiles, copy.server.policy,  copy.client.policy">
+        <concat destfile="${server.domain}/${server.config.dir}/${server.policy}" >
+           <filelist dir="${server.domain}/${server.config.dir}" files="${server.policy.orig}" />
+           <filelist dir="${bin.dir}" files="server_policy.append" />
+        </concat>
+        <concat destfile="${server.home}/lib/appclient/${client.policy}" >
+           <filelist dir="${server.home}/lib/appclient" files="${client.policy.orig}" />
+           <filelist dir="${bin.dir}" files="client_policy.append" />
+        </concat>
+
+    </target>
+
+    <!--
+       Enable the S1AS security configuration settings
+    -->
+    <target name="enable.security" depends="concat.security"/>
+    
+    <!--
+        Filter and copy sun-acc.xml to $TS_HOME/tmp.
+        Also copy the needed DTD to $TS_HOME/tmp
+    -->
+    <target name="filter.sun-acc.xml" depends="configPlatform">
+       <!--<copy file="${as.base}/lib/install/templates/${sun-acc.xml.template}"-->
+       <copy file="${bin.dir}/xml/impl/glassfish/templates/${sun-acc.xml.template}"
+             tofile="${ts.home}/tmp/appclient/${sun-acc.xml}" overwrite="yes">
+           <filterset begintoken="%%%" endtoken="%%%">
+              <filter token="SERVER_ROOT" value="${as.base}" />
+              <filter token="SERVER_NAME" value="${sun-acc.host}" />
+              <filter token="ORB_LISTENER1_PORT" value="${sun-acc.port}" />
+           </filterset>
+        </copy>
+        
+        <if>
+            <istrue value="${appclient.log.output}"/>
+        <then>
+            <replace  file="${ts.home}/tmp/appclient/${sun-acc.xml}"
+                token="log-service file=&quot;&quot; level=&quot;WARNING&quot;"
+                value="log-service file=&quot;${appclient.log.dir}/${sun-acc.xml}.log&quot; level=&quot;${appclient.log.level}&quot;"/>    
+        </then>
+        </if>
+        
+    </target>
+
+    <!--
+        Start The App Server by calling the appropriate target
+        depending on whether we are on unix/linux or windows.
+    -->
+    <target name="start.appserver" depends="configPlatform" >
+
+       <antcall target="start.appserver.unix"/>
+       <antcall target="start.appserver.win"/>
+    </target>
+    <!--
+        Start The App Server on unix/linux
+    -->
+    <target name="start.appserver.unix" depends="configPlatform" if="isUnixPlatform">
+      <exec executable="${exec.asadmin}" failifexecutionfails="false">
+        <arg line="${exec.asadmin.part2}" />
+        <arg line=" start-domain"/>
+        <arg line=" --user ${admin.user}"/>
+        <arg line=" --passwordfile ${password.file}"/>
+        <arg line=" ${server.domain.name}"/>
+      </exec>
+      <echo message=" The App Server is now available." />
+    </target>
+
+    <!--
+        Start the App Server on windoze
+    -->
+    <target name="start.appserver.win" depends="configPlatform" if="isWindowsPlatform">
+      <spawn executable="${exec.asadmin}" failifexecutionfails="false">
+        <arg line="${exec.asadmin.part2}" />
+        <arg line=" start-domain"/>
+        <arg line=" --user ${admin.user}"/>
+        <arg line=" --passwordfile ${password.file}"/>
+        <arg line=" ${server.domain.name}"/>
+      </spawn>
+      <echo message=" ...Waiting for server to be up ...(sleeping for ${server.start.delay.mins} minutes) " /> 
+      <!-- 
+        Currently the waitfor task allocates a port everytime it checks the admin server URL.
+        If one of the server ports is allocated to the waitfor task we get a server startup error.
+        Asadmin start-domain is a synchronous call but in the case of ant on windows the asadmin
+        start-domain never returns to the ant exec task so it hangs forever.  For now we simply
+        sleep for server.start.delay.mins minutes to give the app server more than enough time to come up.  This is
+        a temparay fix until we implement something better.
+      -->
+      <sleep minutes="${server.start.delay.mins}"/> 
+      <echo message=" HTTP server is now available at http://${server.host}:${server.port}" />
+    </target>
+
+    <!--
+       Create cts-asadmin.bat for the harness:
+       Appends an echo statement to the asadmin.bat file on windows only.
+       This is done so the CTS porting can read the return status of
+       the exec'ed asadmin command.  On Unix the return value is propogated
+       back to the exec'ed process.
+    -->
+    <target name="create.asadmin.bat" depends="configPlatform,checkForFiles" if="isWindowsPlatform">
+        <concat destfile="${server.home}/bin/cts-asadmin.bat">
+           <filelist dir="${server.home}/bin" files="asadmin.bat" />
+           <filelist dir="${bin.dir}/xml/impl/glassfish/templates" files="asadmin.bat.concat.template" />
+        </concat>
+    </target>
+
+    <!--
+        Stop The App Server
+    -->
+    <target name="stop-domain" depends="configPlatform">
+      <exec executable="${exec.asadmin}" failifexecutionfails="false">
+        <arg line="${exec.asadmin.part2}" />
+        <arg line=" stop-domain"/>
+        <arg line=" ${server.domain.name}"/>
+      </exec>
+    </target>
+
+     <!--
+       list.jdbc.pools provides the names of the configured jdbc pools.
+     -->
+     <target name="list.jdbc.pools" depends="configPlatform">
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line=" list-jdbc-connection-pools"/>
+            <arg line=" --user ${admin.user}"/>
+            <arg line=" --passwordfile ${password.file}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.port}"/>
+        </exec>
+     </target>
+
+     <!--
+      create-jdbc-connection-pool configures the connection pools defined in the
+      build.properties files.
+     -->
+     <target name="create-jdbc-connection-pool">
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line=" create-jdbc-connection-pool"/>
+            <arg line=" --user ${admin.user}"/>
+            <arg line=" --passwordfile ${password.file}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.port}"/>
+            <arg line=" --restype ${restype}"/>
+            <arg line=" --datasourceclassname ${datasourceclassname}"/>
+            <arg line=" --steadypoolsize 16"/>
+            <arg line=" --maxpoolsize 32"/>
+            <arg line=" --property ${pool.properties}"/>
+            <arg line=" ${poolName}"/>
+        </exec>
+     </target>
+
+     <!--
+        delete-jdbc-connection-pool removes the connection pools defined in the
+        build.properties files.
+     -->
+     <target name="delete-jdbc-connection-pool">
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line=" delete-jdbc-connection-pool"/>
+            <arg line=" --user ${admin.user}"/>
+            <arg line=" --passwordfile ${password.file}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.port}"/>
+            <arg line=" ${poolName}"/>
+        </exec>
+     </target>
+
+     <target name="ping.jdbc.pool.check" depends="configPlatform, checkIfUsingDerbyPool"
+             unless="usingDerbyPool">
+
+        <antcall target="ping.jdbc.pool"/>
+     </target>
+     <!-- 
+       ping.jdbc.pool validates that that configured JDBC Connection Pool
+       can be accessed.
+
+     -->
+     <target name="ping.jdbc.pool" depends="configPlatform">
+        <echo message= "****Validating Connection pool: ${jdbc.poolName} ***"/>
+        <echo message= ""/>
+        <echo message= "Note: this will fail if your DB server is not started"/>
+        <echo message= "      and you can just start your DB server"/>
+        <echo message= ""/>
+        <antcall target="ping-connection-pool" >
+          <param name="poolName" value="${jdbc.poolName}" />
+        </antcall>
+     </target>
+   
+     <!--
+        ping-connection-pool removes the connection pools defined in the
+        build.properties files.
+     -->
+     <target name="ping-connection-pool">
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line=" ping-connection-pool"/>
+            <arg line=" --user ${admin.user}"/>
+            <arg line=" --passwordfile ${password.file}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.port}"/>
+            <arg line=" ${poolName}"/>
+        </exec>
+     </target>
+     <!--
+       Create a JDBC JNDI resource using an existing Connection pool
+     -->
+     <target name="create-jdbc-resource">
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line=" create-jdbc-resource"/>
+            <arg line=" --user ${admin.user}"/>
+            <arg line=" --passwordfile ${password.file}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.port}"/>
+            <arg line=" --connectionpoolid ${connectionpoolid}"/>
+            <arg line=" --target ${server.instance}"/>
+            <arg line=" ${jndiName}"/>
+        </exec>
+     </target>
+
+     <!--
+        Delete an existing JDBC JNDI resource
+     -->
+     <target name="delete-jdbc-resource">
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line=" delete-jdbc-resource"/>
+            <arg line=" --user ${admin.user}"/>
+            <arg line=" --passwordfile ${password.file}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.port}"/>
+            <arg line=" --target ${server.instance}"/>
+            <arg line=" ${jndiName}"/>
+        </exec>
+     </target>
+
+     
+     <!--
+         Add a jvm option to the server
+     -->
+     <target name="create-jvm-options">
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line=" create-jvm-options"/>
+            <arg line=" --user ${admin.user}"/>
+            <arg line=" --passwordfile ${password.file}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.port}"/>
+            <arg line=" --target ${server.instance}"/>
+            <arg line=" ${jvm.options}"/>
+        </exec>
+     </target>
+
+     <!--
+         Remove a jvm option that was prevously added
+     -->
+     <target name="delete-jvm-options">
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line=" delete-jvm-options"/>
+            <arg line=" --user ${admin.user}"/>
+            <arg line=" --passwordfile ${password.file}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.port}"/>
+            <arg line=" --target ${server.instance}"/>
+            <arg line=" ${jvm.options}"/>
+        </exec>
+     </target>
+
+     <!--
+        Set an attribute for an existing domain element
+     -->
+     <target name="set" >
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line=" set"/>
+            <arg line=" --user ${admin.user}"/>
+            <arg line=" --passwordfile ${password.file}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.port}"/>
+            <arg line=" ${set.value}"/>
+        </exec>
+     </target>
+
+     <target name="create-file-user" >
+        <!-- filter a template file to $ts.home/tmp for this particular user and pass it to the -->
+        <!-- asadmin command below.  Form of AS_ADMIN_USERPASSWORD=${userpassword} -->
+        <copy file="${password.file.template}"
+              tofile="${password.file}"
+              overwrite="true">
+          <filterset>
+            <filter token="sjsas.master.password" value="${sjsas.master.password}"/>
+            <filter token="sjsas.admin.password" value="${admin.password}"/>
+            <filter token="user.password" value="${userpassword}" />
+          </filterset>
+        </copy>
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line=" create-file-user"/>
+            <arg line=" --user ${admin.user}"/>
+            <arg line=" --passwordfile ${password.file}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.port}"/>
+            <arg line=" --groups ${usergroups}"/>
+            <arg line=" --target ${server.instance}"/>
+            <arg line=" ${userName}"/>
+        </exec>
+     </target>
+
+     <target name="delete-file-user" >
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line=" delete-file-user"/>
+            <arg line=" --user ${admin.user}"/>
+            <arg line=" --passwordfile ${password.file}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.port}"/>
+            <arg line=" --target ${server.instance}"/>
+            <arg line=" ${userName}"/>
+        </exec>
+     </target>
+
+     <!--
+       Remove the javamail JNDI resources
+     -->
+     <target name="delete-javamail-resource">
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line=" delete-javamail-resource"/>
+            <arg line=" --user ${admin.user}"/>
+            <arg line=" --passwordfile ${password.file}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.port}"/>
+            <arg line=" --target ${server.instance}"/>
+            <arg line=" ${jndiName}"/>
+        </exec>
+     </target>
+
+     <!--
+       Add the javamail JNDI resources
+     -->
+     <target name="create-javamail-resource" >
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line=" create-javamail-resource"/>
+            <arg line=" --user ${admin.user}"/>
+            <arg line=" --passwordfile ${password.file}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.port}"/>
+            <arg line=" --mailhost ${mailHost}"/>
+            <arg line=" --mailuser ${mailuser1}"/>
+            <arg line=" --fromaddress ${mailFrom}"/>
+            <arg line=" --target ${server.instance}"/>
+            <arg line=" ${jndiName}"/>
+        </exec>
+     </target>
+
+     <!--
+        Add the a JMS user
+     -->
+     <target name="create-jms-user" >
+       <exec executable="${exec.imqusermgr}" >
+            <env key="IMQ_JAVAHOME" value="${java.home}"/>
+            <arg line="${exec.imqusermgr.part2}"/>
+            <arg line="-i ${jmsServer}"/>
+            <arg line=" add"/>
+            <arg line=" -u ${userName} "/>
+            <arg line=" -p ${userPassword} "/>
+            <arg line=" -g ${userGroup} "/>
+            <arg line=" -f "/>
+        </exec>
+     </target>
+
+     <!--
+        Delete the a JMS user
+     -->
+     <target name="delete-jms-user" >
+       <exec executable="${exec.imqusermgr}" >
+            <env key="IMQ_JAVAHOME" value="${java.home}"/>
+            <arg line="${exec.imqusermgr.part2}"/>
+            <arg line="-i ${jmsServer}"/>
+            <arg line=" delete"/>
+            <arg line=" -u ${userName} "/>
+            <arg line=" -p ${userPassword} "/>
+            <arg line=" -g ${userGroup} "/>
+            <arg line=" -f "/>
+        </exec>
+     </target>
+
+     <!--
+       Delete a Connector Connection Pool
+     -->
+     <target name="delete-connector-connection-pool" >
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line=" delete-connector-connection-pool"/>
+            <arg line=" --user ${admin.user}"/>
+            <arg line=" --passwordfile ${password.file}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.port}"/>
+            <arg line=" --cascade=true"/>
+            <arg line=" ${poolName}"/>
+        </exec>
+    </target>
+
+     <!--
+       Create a Connector Connection Pool
+     -->
+     <target name="create-connector-connection-pool" >
+       <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line=" create-connector-connection-pool"/>
+            <arg line=" --user ${admin.user}"/>
+            <arg line=" --passwordfile ${password.file}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.port}"/>
+            <arg line=" --raname ${rarName}"/>
+            <arg line=" --connectiondefinition com.sun.connector.jaxr.JaxrConnectionFactory"/>
+            <arg line=" ${poolName}"/>
+        </exec>
+     </target>
+
+     <!--
+       Create a Connector Resource
+     -->
+     <target name="create-connector-resource" >
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line=" create-connector-resource"/>
+            <arg line=" --user ${admin.user}"/>
+            <arg line=" --passwordfile ${password.file}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.port}"/>
+            <arg line=" --poolname ${poolName}"/>
+            <arg line=" --target ${server.instance}"/>
+            <arg line=" ${jndiName}"/>
+        </exec>
+     </target>
+
+
+     <!--
+       Delete a Connector Resource
+     -->
+     <target name="delete-connector-resource" >
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line=" delete-connector-resource"/>
+            <arg line=" --user ${admin.user}"/>
+            <arg line=" --passwordfile ${password.file}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.port}"/>
+            <arg line=" --target ${server.instance}"/>
+            <arg line=" ${jndiName}"/>
+        </exec>
+     </target>
+
+      <!--
+       drop.classpathsuffix removes the classpath settings previously defined
+     -->
+     <target name="drop.classpathsuffix" depends="configPlatform" >
+         <antcall target="set" >
+          <param name="set.value" value=" ${server.instance}-config.java-config.classpath_suffix="/>
+         </antcall>
+     </target>
+
+
+    <!--
+       rerestart.server reconfigures and restarts the App Server
+     -->
+     <target name="restart.server" depends="configPlatform">
+       <antcall target="stop-domain"/>
+       <delete quiet="true">
+         <fileset dir="${s1as.domain}/logs" includes="jacc_log*"/>
+       </delete>
+       <antcall target="start.appserver"/>
+     </target>
+
+
+     <!--
+       Modify the applicationRoot. Needed for windows tests.
+     -->
+     <target name="change.applicationRoot" depends="configPlatform" if="isWindowsPlatform">
+         <antcall target="set" >
+          <param name="set.value" value=" domain.application_root=${drive}"/>
+         </antcall>
+         <antcall target="restart.server"/>
+     </target>
+
+     <!--
+       Enable Tx interoperability
+     -->
+     <target name="enable.tx.interop" depends="configPlatform" >
+       <antcall target="delete.tx.interop"/>
+       <antcall target="create-jvm-options" >
+         <param name="jvm.options" value=" -Dcom.sun.jts.pi.INTEROP_MODE=true"/>
+       </antcall>
+       <antcall target="restart.server"/>
+     </target>
+
+     <!--
+       Disable Tx interoperability
+     -->
+     <target name="disable.tx.interop" depends="configPlatform" >
+       <antcall target="delete.tx.interop"/>
+       <antcall target="create-jvm-options" >
+         <param name="jvm.options" value=" -Dcom.sun.jts.pi.INTEROP_MODE=false"/>
+       </antcall>
+       <antcall target="restart.server"/>
+     </target>
+
+     <!--
+       Delete the Tx interoperability settings
+     -->
+     <target name="delete.tx.interop" depends="configPlatform" >
+       <antcall target="delete-jvm-options" >
+         <param name="jvm.options" value=" -Dcom.sun.jts.pi.INTEROP_MODE=true"/>
+       </antcall>
+
+       <antcall target="delete-jvm-options" >
+         <param name="jvm.options" value=" -Dcom.sun.jts.pi.INTEROP_MODE=false"/>
+       </antcall>
+     </target>
+
+     <!--
+       Add the certificate needed for csiv2
+     -->
+     <target name="import.cert" depends="configPlatform,checkForFiles,generate.certs" >
+        <exec executable="${exec.keytool}" >
+            <env key="JAVA_HOME" value="${java.home}" />
+            <arg line=" ${exec.keytool.part2}" />
+            <arg line=" -import"/>
+            <arg line=" -alias ${cert.alias}"/>
+            <arg line=" -file ${cert.file}"/>
+            <arg line=" -noprompt"/>
+            <arg line=" -trustcacerts"/>
+            <arg line=" -keystore ${trustStore}"/>
+            <arg line=" -storepass ${trustStore.password}"/>
+        </exec>
+
+     </target>
+
+
+     <target name="export.cert" depends="configPlatform,checkForFiles,generate.certs" >
+        <exec executable="${exec.keytool}" >
+            <env key="JAVA_HOME" value="${java.home}" />
+            <arg line=" ${exec.keytool.part2}" />
+            <arg line=" -export"/>
+            <arg line=" -rfc"/>
+            <arg line=" -alias ${cert.alias}"/>
+            <arg line=" -file ${cert.file}"/>
+            <arg line=" -keystore ${trustStore}"/>
+            <arg line=" -storepass ${trustStore.password}"/>
+        </exec>
+
+     </target>
+
+
+     <!--
+       Drop the certificate used for csiv2
+     -->
+     <target name="delete.cert" depends="configPlatform" >
+        <exec executable="${exec.keytool}" >
+            <env key="JAVA_HOME" value="${java.home}" />
+            <arg line=" ${exec.keytool.part2}" />
+            <arg line=" -delete"/>
+            <arg line=" -alias ${cert.alias}"/>
+            <arg line=" -file ${cert.file}"/>
+            <arg line=" -storepass ${trustStore.password}"/>
+            <arg line=" -noprompt"/>
+            <arg line=" -trustcacerts"/>
+            <arg line=" -keystore ${trustStore}"/>
+        </exec>
+     </target>
+
+
+     <!--
+       This target is only used for SE/EE it generates the jks files from the 
+       NSS database.  This is needed by appclient on SE/EE.
+     -->
+     <target name="generate.certs"  unless="java.keystore.generated" >
+        <echo message="***Exporting certificate from NSS database" />
+        <exec executable="${exec.certutil}" 
+              output="${server.config.dir.path}/${server.cert.alias}.cert" >
+            <env key="JAVA_HOME" value="${java.home}" />
+            <arg line=" ${exec.certutil.part2}" />
+            <arg line=" -L" />
+            <arg line=" -n" />
+            <arg line=" ${server.cert.alias}" />
+            <arg line=" -d" />
+            <arg line=" ${server.config.dir.path}" />
+            <arg line=" -a" />
+        </exec>
+
+        <echo message="***Generating Java Keystore from generated certificate "/>
+        <exec executable="${exec.keytool}" >
+            <env key="JAVA_HOME" value="${java.home}" />
+            <arg line=" ${exec.keytool.part2}" />
+            <arg line=" -import" />
+            <arg line=" -v" />
+            <arg line=" -noprompt" />
+            <arg line=" -alias ${server.cert.alias}" />
+            <arg line=" -file" />
+            <arg line="${server.config.dir.path}/${server.cert.alias}.cert" />
+            <arg line=" -keypass   ${keystore.password}" />
+            <arg line=" -keystore  ${keystore.jks}" />
+            <arg line=" -storepass ${keystore.password}" />
+        </exec>
+
+        <echo message="***Generating Java trust store from generated certificate "/>
+        <exec executable="${exec.keytool}" >
+            <env key="JAVA_HOME" value="${java.home}" />
+            <arg line=" ${exec.keytool.part2}" />
+            <arg line=" -import" />
+            <arg line=" -v" />
+            <arg line=" -noprompt" />
+            <arg line=" -trustcacerts" />
+            <arg line=" -alias ${server.cert.alias}" />
+            <arg line=" -file" />
+            <arg line="${server.config.dir.path}/${server.cert.alias}.cert" />
+            <arg line=" -keypass   ${keystore.password}" />
+            <arg line=" -keystore  ${cacerts.jks}" />
+            <arg line=" -storepass ${keystore.password}" />
+        </exec>
+     </target>
+
+
+     <!--
+          targets to stop and start Derby
+     
+          It may be necessary to add the following system property to the JavaDB startup when running on the Mac.
+          The bug is suppossed to be fixed, making the property unnecessary,  but one never knows.
+          This URL describes the issue and the fix:  http://db.apache.org/derby/faq.html#createdb_OS_X
+
+            <sysproperty key="derby.storage.fileSyncTransactionLog" value="true"/>
+     -->
+     <target name="start.javadb" depends="configPlatform">
+       <echo message="*** Starting Derby "/>
+       <java classname="org.apache.derby.drda.NetworkServerControl"
+             classpath="${derby.home}/lib/derbynet.jar${pathsep}${ts.home}/lib/dbprocedures.jar" fork="true" spawn="true">
+         <sysproperty key="derby.system.home" value="${derby.home}/databases"/>
+         <arg line="-h ${derby.server} -p ${derby.port} start"/>
+       </java>
+       <sleep seconds="10"/>
+       <echo message="*** JavaDB Started "/>
+     </target>
+
+     <target name="stop.javadb" depends="configPlatform">
+       <java classname="org.apache.derby.drda.NetworkServerControl"
+             classpath="${derby.home}/lib/derbynet.jar${pathsep}${ts.home}/lib/dbprocedures.jar" fork="true" spawn="true">
+         <arg line="-h ${derby.server} -p ${derby.port} shutdown"/>
+       </java>
+       <echo message="*** JavaDB Stopped "/>
+     </target>
+
+     <!--
+          Determine whether we are running the Java EE RI, PE, SE or EE
+          edition.
+     -->
+     <target name="get.platform.edition" depends="configPlatform">
+        <exec executable="${exec.asadmin}"  outputproperty="viVersion">
+            <arg line="${exec.asadmin.part2}" />
+            <arg line=" version"/>
+            <arg line=" --user ${s1as.admin.user}"/>
+            <arg line=" --passwordfile ${password.file}"/>
+            <arg line=" --host ${s1as.admin.host}"/>
+            <arg line=" --port ${s1as.admin.port}"/>
+        </exec>
+     
+        <condition  property="foundPE">
+           <or>
+              <contains string="${viVersion}"
+                        substring="Reference Implementation"/>
+              <contains string="${viVersion}"
+                        substring="Platform Edition"/>
+           </or>
+        </condition>
+     </target>
+
+     <!--
+        create-nodeagent
+     -->
+     <target name="create-nodeagent">
+       <echo message= "****create-nodeagent ${nodeagent.name}"/>
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line="create-node-agent"/>
+            <arg line="--host ${server.host}"/>
+            <arg line="--port ${server.port}"/>
+            <arg line="--user ${admin.user}"/>
+            <arg line="--passwordfile ${password.file}"/>
+            <arg line="--savemasterpassword"/>
+            <arg line="--passwordfile ${password.file}"/>
+            <arg line="${nodeagent.path}"/>
+            <arg line="${nodeagent.name}"/>
+        </exec>
+     </target>
+
+     <!--
+        create-node-instance
+     -->
+     <target name="create-node-instance">
+       <echo message= "****create-node-instance ${node.instance.name}"/>
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line="create-instance"/>
+            <arg line="--user ${admin.user}"/>
+            <arg line="--passwordfile ${password.file}"/>
+            <arg line="--host ${server.host}"/>
+            <arg line="--port ${server.port}"/>
+            <arg line="--nodeagent ${nodeagent.name}"/>
+            <arg line=" ${node.instance.name}"/>
+        </exec>
+     </target>
+
+
+     <!--
+        create-cluster-instance
+     -->
+     <target name="create-cluster-instance">
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line="create-instance"/>
+            <arg line="--user ${admin.user}"/>
+            <arg line="--passwordfile ${password.file}"/>
+            <arg line="--cluster ${cluster.name}"/>
+            <arg line="--nodeagent ${nodeagent.name}"/>
+            <arg line=" ${node.instance.name}"/>
+        </exec>
+     </target>
+
+     <!--
+        start-nodeagent
+     -->
+     <target name="start-nodeagent.win" if="isWindowsPlatform">
+       <echo message= "****start-nodeagent ${nodeagent.name}"/>
+        <spawn executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line="start-node-agent"/>
+            <arg line="--user ${admin.user}"/>
+            <arg line="--passwordfile ${password.file}"/>
+            <arg line="${nodeagent.path}"/>
+            <arg line="${nodeagent.name}"/>
+        </spawn>
+        <echo message="Sleeping for ${server.start.delay.mins} minutes waiting for node agent to start"/>
+        <sleep minutes="${server.start.delay.mins}"/>
+     </target>
+     <target name="start-nodeagent.unix" if="isUnixPlatform">
+       <echo message= "****start-nodeagent ${nodeagent.name}"/>
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line="start-node-agent"/>
+            <arg line="--user ${admin.user}"/>
+            <arg line="--passwordfile ${password.file}"/>
+            <arg line="${nodeagent.name}"/>
+        </exec>
+     </target>
+     <target name="start-nodeagent" depends="configPlatform">
+        <antcall target="start-nodeagent.win"/>
+        <antcall target="start-nodeagent.unix"/>
+     </target>
+
+     <!--
+        stop-nodeagent
+     -->
+     <target name="stop-nodeagent">
+       <echo message= "****stop-nodeagent ${nodeagent.name}"/>
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line="stop-node-agent"/>
+            <arg line="${nodeagent.path}"/>
+            <arg line="${nodeagent.name}"/>
+        </exec>
+     </target>
+
+     <!--
+        delete-nodeagent
+     -->
+     <target name="delete-nodeagent">
+       <echo message= "****delete-nodeagent ${nodeagent.name}"/>
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line="delete-node-agent"/>
+            <arg line="${nodeagent.path}"/>
+            <arg line="${nodeagent.name}"/>
+        </exec>
+     </target>
+
+     <!--
+        delete-nodeagent-config
+     -->
+     <target name="delete-nodeagent-config">
+       <echo message= "****delete-nodeagent-config ${nodeagent.name}"/>
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line="delete-node-agent-config"/>
+            <arg line="--user ${admin.user}"/>
+            <arg line="--passwordfile ${password.file}"/>
+            <arg line="--host ${server.host}"/>
+            <arg line="--port ${server.port}"/>
+            <arg line="${nodeagent.name}"/>
+        </exec>
+     </target>
+     <!--
+        create-cluster
+     -->
+     <target name="create-cluster">
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line="create-cluster"/>
+            <arg line="--user ${admin.user}"/>
+            <arg line="--passwordfile ${password.file}"/>
+            <arg line=" ${cluster.name}"/>
+        </exec>
+     </target>
+
+
+     <!--
+        start-cluster
+     -->
+     <target name="start-cluster.win" if="isWindowsPlatform">
+        <spawn executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line="start-cluster"/>
+            <arg line="--user ${admin.user}"/>
+            <arg line="--passwordfile ${password.file}"/>
+            <arg line=" ${cluster.name}"/>
+        </spawn>
+       <echo message="Sleeping for ${server.start.delay.mins} minutes waiting for clusterto start"/>
+        <sleep minutes="${server.start.delay.mins}"/>
+     </target>
+     <target name="start-cluster.unix" if="isUnixPlatform">
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line="start-cluster"/>
+            <arg line="--user ${admin.user}"/>
+            <arg line="--passwordfile ${password.file}"/>
+            <arg line=" ${cluster.name}"/>
+        </exec>
+     </target>
+     <target name="start-cluster" depends="configPlatform">
+       <antcall target="start-cluster.win"/>
+       <antcall target="start-cluster.unix"/>
+     </target>
+
+
+     <!--
+        start-instance
+     -->
+     <target name="start-instance.win" if="isWindowsPlatform">
+        <spawn executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line="start-instance"/>
+            <arg line="--user ${admin.user}"/>
+            <arg line="--passwordfile ${password.file}"/>
+            <arg line="--host ${server.host}"/>
+            <arg line="--port ${server.port}"/>
+            <arg line=" ${instance.name}"/>
+        </spawn>
+        <echo message="Sleeping for ${server.start.delay.mins} minutes waiting for remote instance to start"/>
+        <sleep minutes="${server.start.delay.mins}"/>
+     </target>
+     <target name="start-instance.unix" if="isUnixPlatform">
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line="start-instance"/>
+            <arg line="--user ${admin.user}"/>
+            <arg line="--passwordfile ${password.file}"/>
+            <arg line="--host ${server.host}"/>
+            <arg line="--port ${server.port}"/>
+            <arg line=" ${instance.name}"/>
+        </exec>
+     </target>
+     <target name="start-instance" depends="configPlatform">
+       <antcall target="start-instance.win"/>
+       <antcall target="start-instance.unix"/>
+     </target>
+
+     <!--
+        stop-instance
+     -->
+     <target name="stop-instance" depends="configPlatform">
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line="stop-instance"/>
+            <arg line="--user ${admin.user}"/>
+            <arg line="--passwordfile ${password.file}"/>
+            <arg line="--host ${server.host}"/>
+            <arg line="--port ${server.port}"/>
+            <arg line=" ${instance.name}"/>
+        </exec> 
+        <echo message="Sleeping for ${server.start.delay.mins} minutes waiting for instance to stop"/>
+        <sleep minutes="${server.start.delay.mins}"/>       
+     </target>
+
+     <!--
+        delete-instance
+     -->
+     <target name="delete-instance">
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line="delete-instance"/>
+            <arg line="--user ${admin.user}"/>
+            <arg line="--passwordfile ${password.file}"/>
+            <arg line="--host ${server.host}"/>
+            <arg line="--port ${server.port}"/>
+            <arg line=" ${instance.name}"/>
+        </exec>
+     </target>
+
+     <!--
+        create-system-properties
+     -->
+     <target name="create-system-properties" >
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line="create-system-properties"/>
+            <arg line="--user ${admin.user}"/>
+            <arg line="--host ${server.host}"/>
+            <arg line="--port ${server.port}"/>
+            <arg line="--passwordfile ${password.file}"/>
+            <arg line=" --target ${instance.name}"/>
+            <arg line=" ${property}"/>
+        </exec>
+     </target>
+    
+  <!-- Adding wss security providers to secure SOAP messages -->
+
+  <target name="enable.wss.providers"  >
+      <!-- Add default server provider -->
+     <echo message="Adding default server provider" />
+        <antcall target="enable.server.provider">
+        </antcall>
+
+      <!-- Add default server side client provider -->
+     <echo message="Adding default server side client provider" />
+        <antcall target="enable.serverside.client.provider">
+        </antcall>
+       
+     <echo message="Coping sun-acc.xml.template to the appserver config directory" />
+     
+     <copy file="${javaee.home}/lib/install/templates/${sun-acc.xml.template}" 
+             tofile="${javaee.home}/lib/install/templates/${sun-acc.xml.template.orig}" overwrite="yes">
+     </copy>
+     
+     <echo message="Coping wss-client-config.xml to the appserver lib directory" />
+     
+     <copy file="${javaee.home}/lib/appclient/wss-client-config.xml" 
+             tofile="${javaee.home}/lib/appclient/wss-client-config.xml.orig" overwrite="yes">
+     </copy>
+     
+     <copy file="${ts.home}/src/com/sun/ts/tests/jaspic/ejb/xms/wss-client-config.xml" 
+             tofile="${javaee.home}/lib/appclient/wss-client-config.xml" overwrite="yes">
+     </copy>
+
+     <copy file="${ts.home}/src/com/sun/ts/tests/jaspic/ejb/xms/${sun-acc.xml.template}" 
+             tofile="${javaee.home}/lib/install/templates/${sun-acc.xml.template}" overwrite="yes">
+        <filterset begintoken="%%%" endtoken="%%%">
+        <filter token="INSTALL_ROOT" value="${javaee.home}" />
+        <filter token="SERVER_NAME" value="${s1as.admin.host}" />
+        <filter token="ORB_LISTENER_PORT" value="${orb.port.ri}" />
+     </filterset>
+     </copy>
+
+  </target>
+
+   <target name="enable.server.provider" >
+           <property name="exec.asadmin" value="${cli.path}" />
+           <property name="exec.asadmin.part2" value="" />
+            <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" /> 
+            <arg line=" set "/>
+            <arg line=" server-config.security-service.message-security-config.SOAP.default_provider=ServerProvider"/>
+        </exec>
+     </target>
+
+  <target name="enable.serverside.client.provider" >
+           <property name="exec.asadmin" value="${cli.path}" />
+           <property name="exec.asadmin.part2" value="" />
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line="set "/>
+            <arg line="server-config.security-service.message-security-config.SOAP.default_client_provider=ClientProvider "/>
+        </exec>
+     </target>
+    
+    <!--
+       Disable wss providers configuration 
+    -->
+   <target name="disable.wss.providers" depends="configPlatform">
+        <property name="exec.asadmin" value="${cli.path}" />
+        <property name="exec.asadmin.part2" value="" />
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line="set "/>
+            <arg line=" server-config.security-service.message-security-config.SOAP.default_provider="/>
+        </exec>
+     <echo message="Removing wss client-provider" />
+        <property name="exec.asadmin" value="${cli.path}" />
+        <property name="exec.asadmin.part2" value="" />
+        <exec executable="${exec.asadmin}" >
+            <arg line="${exec.asadmin.part2}" />
+            <arg line="set "/>
+            <arg line="server-config.security-service.message-security-config.SOAP.default_client_provider="/>
+        </exec> 
+    
+    <echo message="Reverting to default sun-acc.xml" />
+    
+    <copy file="${javaee.home}/lib/install/templates/${sun-acc.xml.template.orig}" 
+             tofile="${javaee.home}/lib/install/templates/${sun-acc.xml.template}" overwrite="yes">
+     </copy>
+     
+     <echo message="Coping wss-client-config.xml to the appserver lib directory" />
+     
+     <copy file="${javaee.home}/lib/appclient/wss-client-config.xml.orig" 
+             tofile="${javaee.home}/lib/appclient/wss-client-config.xml" overwrite="yes">
+     </copy>
+
+      <!-- Restart server -->
+        <antcall target="restart.server" />
+   </target>
+
+    <!--
+       Enable the configuration required by jacc   
+    -->
+    <target name="enable.jacc" depends="configPlatform" >
+        <antcall target="create.jacc.vm.options"/>
+    </target>
+    
+    <target name="add.persistence.vm.options" depends="configPlatform">
+         <antcall target="create-jvm-options" >
+          <param name="jvm.options" value=" -Dlog.file.location=${log.file.location}"/>
+         </antcall>
+    </target>
+
+   <target name="delete.persistence.vm.options" depends="configPlatform">
+         <antcall target="delete-jvm-options" >
+          <param name="jvm.options" value=" -Dlog.file.location=${log.file.location}"/>
+         </antcall>
+   </target>
+
+
+    <!--
+       This target was created because we have tools, namely the runcts ant task,
+       that would like to be able to add the JVM options for JACC but not call
+       server restart.  This was due to techical glitches when restarting the server
+       from a spawned process in the task.
+    -->
+    <target name="create.jacc.vm.options" depends="configPlatform">
+         <antcall target="create-jvm-options" >
+          <param name="jvm.options" value=" -Djavax.security.jacc.policy.provider=com.sun.ts.tests.jacc.provider.TSPolicy"/>
+         </antcall>
+
+         <antcall target="create-jvm-options" >
+          <param name="jvm.options" value=" -Dvendor.javax.security.jacc.policy.provider=com.sun.enterprise.security.provider.PolicyWrapper"/>
+         </antcall>
+
+         <antcall target="create-jvm-options" >
+          <param name="jvm.options" value=" -Djavax.security.jacc.PolicyConfigurationFactory.provider=com.sun.ts.tests.jacc.provider.TSPolicyConfigurationFactoryImpl"/>
+         </antcall>
+
+         <antcall target="create-jvm-options" >
+          <param name="jvm.options" value=" -Dvendor.javax.security.jacc.PolicyConfigurationFactory.provider=com.sun.enterprise.security.provider.PolicyConfigurationFactoryImpl "/>
+         </antcall>
+
+         <antcall target="create-jvm-options" >
+          <param name="jvm.options" value=" -Dlog.file.location=${log.file.location}"/>
+         </antcall>
+    </target>
+
+    <!--
+       Disable jacc configuration 
+    -->
+    <target name="disable.jacc" depends="configPlatform" >
+         <antcall target="delete.jacc.vm.options"/>
+         <antcall target="restart.server"/>
+    </target>
+
+
+    <!--
+       This target was created because we have tools, namely the runcts ant task,
+       that would like to be able to remove the JVM options for JACC but not call
+       server restart.  This was due to techical glitches when restarting the server
+       from a spawned process in the task.
+    -->
+    <target name="delete.jacc.vm.options" depends="configPlatform">
+         <antcall target="delete-jvm-options" >
+          <param name="jvm.options" value=" -Djavax.security.jacc.policy.provider=com.sun.ts.tests.jacc.provider.TSPolicy"/>
+         </antcall>
+        
+         <antcall target="delete-jvm-options" >
+          <param name="jvm.options" value=" -Dvendor.javax.security.jacc.policy.provider=com.sun.enterprise.security.provider.PolicyWrapper"/>
+         </antcall>
+
+         <antcall target="delete-jvm-options" >
+          <param name="jvm.options" value=" -Djavax.security.jacc.PolicyConfigurationFactory.provider=com.sun.ts.tests.jacc.provider.TSPolicyConfigurationFactoryImpl"/>
+         </antcall>
+
+         <antcall target="delete-jvm-options" >
+          <param name="jvm.options" value=" -Dvendor.javax.security.jacc.PolicyConfigurationFactory.provider=com.sun.enterprise.security.provider.PolicyConfigurationFactoryImpl "/>
+         </antcall>
+
+         <antcall target="delete-jvm-options" >
+          <param name="jvm.options" value=" -Dlog.file.location=${log.file.location}"/>
+         </antcall>
+     </target>
+
+
+     <!--
+         Get the platform version and store the return value in
+         the property "platformVersion".  Currently this method is only
+         required by the target start.appserver
+     -->
+     <target name="get.platform.version" depends="configPlatform" unless="gotVersion">
+        <exec executable="${exec.asadmin}"  outputproperty="platformVersion">
+            <arg line="${exec.asadmin.part2}" />
+            <arg line=" version"/>
+            <arg line=" --user ${admin.user}"/>
+            <arg line=" --passwordfile ${password.file}"/>
+            <arg line=" --host ${server.host}"/>
+            <arg line=" --port ${server.port}"/>
+        </exec>
+
+     </target>
+        
+     <!--
+       Used to create a password file for SJSAS.  Only needed by SJSAS 8.1 but it is
+       compatible
+       -->
+     <target name="filter.password.file" depends="configPlatform">
+       <copy file="${password.file.template}"
+             tofile="${password.file}"
+             overwrite="true">
+        <filterset>
+           <filter token="sjsas.master.password" value="${sjsas.master.password}"/>
+           <filter token="sjsas.admin.password" value="${admin.password}"/>
+         </filterset>
+       </copy>
+     </target>
+
+     <!--
+         For Appserver EE: Import RI's server certificate into EE's 
+         certificate database using certutil
+     -->
+     <target name="import.into.nss.databases" if="found.nss.databases" >
+          <echo message="Importing RI's server certificate into NSS database" />
+          <exec executable="${exec.certutil}">
+            <env key="JAVA_HOME" value="${java.home}" />
+            <arg line=" ${exec.certutil.part2}" />
+            <arg line=" -A" />
+            <arg line=" -a" />
+            <arg line=" -n" />
+            <arg line=" ricert" />
+            <arg line=" -t" />
+            <arg line=" CTP,CTP,CTP" />
+            <arg line=" -d" />
+            <arg line=" ${NSSConfigDir}" />
+            <arg line=" -i" />
+            <arg line=" ${ts.home}/tmp/ri_server_cert.file" />
+          </exec>
+     </target>
+
+<!-- Please remove if the new version of SE fixes this issue, see start.javadb above for details.
+     <target name="set.fileSyncTransactionLogValue.mac" if="isMac">
+       <property name="fileSyncTransactionLogValue" value="true"/>
+     </target>
+
+     <target name="set.fileSyncTransactionLogValue.non.mac" unless="isMac">
+       <property name="fileSyncTransactionLogValue" value="false"/>       
+     </target>
+-->
+
+</project>

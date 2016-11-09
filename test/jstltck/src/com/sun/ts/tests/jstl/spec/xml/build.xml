@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="usage" name="jstl_spec_xml">
+  <import file="../../../../../../../../bin/xml/ts.nonleafimport.xml" />
+</project>
