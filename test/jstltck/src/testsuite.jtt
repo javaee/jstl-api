@@ -1,3 +1,0 @@
-classpath=$TS_HOME/lib/tsharness.jar
-testsuite=com.sun.ts.lib.harness.TS
-name=JSP Standard Tag Library TCK/1.2
