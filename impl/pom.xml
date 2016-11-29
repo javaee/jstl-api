@@ -51,7 +51,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.web</groupId>
     <artifactId>javax.servlet.jsp.jstl</artifactId>
-    <version>1.2.5-b02</version>
+    <version>1.2.5-b03</version>
     <packaging>jar</packaging>
     <name>JavaServer Pages (TM) TagLib Implementation</name>
 
@@ -243,6 +243,20 @@
                         org.apache.taglibs.standard.tlv,
                         org.glassfish.jstl.integration
                         </Export-Package>
+                        <Import-Package>
+                              !org.apache.xpath,
+                              !org.apache.xpath.objects,
+                              !org.apache.xpath.jaxp,
+                              !org.apache.xml,
+                              !org.apache.xml.utils,
+                              !org.apache.xalan,
+                              !org.apache.xalan.res,
+                              !org.apache.regexp,
+                              !org.apache.bcel,
+                              !java_cup.runtime,
+                              !trax,
+                              *
+                        </Import-Package>
                     </instructions>
                 </configuration>
                 <executions>
