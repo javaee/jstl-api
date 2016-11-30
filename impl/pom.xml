@@ -255,6 +255,7 @@
                               !org.apache.bcel,
                               !java_cup.runtime,
                               !trax,
+                              org.xml.sax.ext,
                               *
                         </Import-Package>
                     </instructions>
