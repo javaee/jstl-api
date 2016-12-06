@@ -52,7 +52,7 @@
     <groupId>javax.servlet.jsp.jstl</groupId>
     <artifactId>javax.servlet.jsp.jstl-api</artifactId>
     <packaging>jar</packaging>
-    <version>1.2.5-b05</version>
+    <version>1.2.5-b06-SNAPSHOT</version>
     <name>JavaServer Pages(TM) Standard Tag Library API</name>
     <url>http://jcp.org/en/jsr/detail?id=52</url>
 
@@ -100,9 +100,9 @@
         </mailingList>
     </mailingLists>
     <scm>
-        <connection>scm:svn:https://svn.java.net/svn/jstl~svn/tags/javax.servlet.jsp.jstl-api-1.2.5-b05</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/jstl~svn/tags/javax.servlet.jsp.jstl-api-1.2.5-b05</developerConnection>
-        <url>http://java.net/projects/jstl/sources/svn/show/tags/javax.servlet.jsp.jstl-api-1.2.5-b05</url>
+        <connection>scm:svn:https://svn.java.net/svn/jstl~svn/trunk/api</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/jstl~svn/trunk/api</developerConnection>
+        <url>http://java.net/projects/jstl/sources/svn/show</url>
     </scm>
 
 
