@@ -51,7 +51,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.web</groupId>
     <artifactId>javax.servlet.jsp.jstl</artifactId>
-    <version>1.2.5-b03</version>
+    <version>1.2.6-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>JavaServer Pages (TM) TagLib Implementation</name>
 
@@ -99,9 +99,9 @@
         </mailingList>
     </mailingLists>
     <scm>
-        <connection>scm:svn:https://svn.java.net/svn/jstl~svn/trunk/impl</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/jstl~svn/trunk/impl</developerConnection>
-        <url>http://java.net/projects/jstl/sources/svn/show</url>
+        <connection>scm:git:https://github.com/javaee/jstl-api.git/impl</connection>
+        <developerConnection>scm:git:https://github.com/javaee/jstl-api.git/impl</developerConnection>
+        <url>https://github.com/javaee/jstl-api.git/impl</url>
     </scm>
 
 
